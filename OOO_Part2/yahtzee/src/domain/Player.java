@@ -9,7 +9,6 @@ public class Player {
 	public Player(String username) {
 		setUsername(username);
 		screen = new GameScreen(this);
-		screen.show();
 	}
 
 	private void setUsername(String username) {
