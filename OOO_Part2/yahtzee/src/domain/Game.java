@@ -64,5 +64,9 @@ public class Game {
 			}
 		}
 	}
+	
+	public void startGame(){
+		//TODO
+	}
 
 }
