@@ -16,9 +16,10 @@ public class GameScreen extends BorderPane implements Observer {
 		this.setTop(setLabelLayout(gameLabel));
 		this.setBottom(setLabelLayout(playerLabel));
 	}
-	
-	public Label setLabelLayout(Label label){
-		label.setStyle("-fx-background-color: #FFFFFF; -fx-alignment: center; -fx-font: 25px Tahoma; -fx-font-weight: bold");
+
+	public Label setLabelLayout(Label label) {
+		label.setStyle(
+				"-fx-background-color: #FFFFFF; -fx-alignment: center; -fx-font: 25px Tahoma; -fx-font-weight: bold");
 		label.setMinHeight(50);
 		label.setMinWidth(900);
 		return label;

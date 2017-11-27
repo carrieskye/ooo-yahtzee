@@ -66,7 +66,7 @@ public class Game {
 		return currentPlayer;
 	}
 
-	public void setCurrentPlayer(Player currentPlayer) {
+	private void setCurrentPlayer(Player currentPlayer) {
 		this.currentPlayer = currentPlayer;
 	}
 
