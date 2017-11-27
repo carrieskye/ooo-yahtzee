@@ -1,14 +1,20 @@
 package application;
 
+import java.awt.HeadlessException;
+
+import javax.swing.JOptionPane;
+
+import domain.DomainException;
+import domain.Game;
+import domain.Player;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 public class Main extends Application {
+
+	Game game = Game.getInstance();
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -16,8 +22,7 @@ public class Main extends Application {
 			BorderPane root = new BorderPane();
 			Scene scene = new Scene(root, 400, 400);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-			Button launchYahtzee = new Button("launch Yahtzee");
-			root.setCenter(launchYahtzee);
+			registerPlayers();
 			primaryStage.setTitle("GameSuite");
 			primaryStage.setScene(scene);
 			primaryStage.show();
@@ -31,9 +36,18 @@ public class Main extends Application {
 
 	}
 
-	class launchYahtzeeHandler implements EventHandler<ActionEvent> {
-		@Override
-		public void handle(ActionEvent event) {
+	private void registerPlayers() {
+		boolean registeringPlayers = true;
+		while (registeringPlayers == true) {
+			try {
+				game.registerPlayer(JOptionPane.showInputDialog("Register player with username:"));
+			} catch (DomainException e) {
+				JOptionPane.showMessageDialog(null, e.getMessage());
+			} catch (IllegalArgumentException e) {
+				JOptionPane.showMessageDialog(null, e.getMessage());
+			} catch (NullPointerException e) {
+				registeringPlayers = false;
+			}
 		}
 	}
 
