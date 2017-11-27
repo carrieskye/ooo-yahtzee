@@ -1,22 +1,26 @@
 package domain;
 
-import java.util.Observable;
-import java.util.Observer;
-
 import view.GameScreen;
 
-public class Player implements Observer{
+public class Player {
 	private String username;
-	private GameScreen veld;
-	
-	public Player(String username){
-		veld = new GameScreen();
+	private GameScreen screen;
+
+	public Player(String username) {
+		setUsername(username);
+		screen = new GameScreen(this);
+		screen.show();
 	}
 
-	@Override
-	public void update(Observable o, Object arg) {
-		// TODO Auto-generated method stub
-		
+	private void setUsername(String username) {
+		if (username.isEmpty() || username == null){
+			throw new IllegalArgumentException("Name cannot be empty.");
+		}
+		this.username = username;
+	}
+
+	public String getUsername() {
+		return this.username;
 	}
 
 }
