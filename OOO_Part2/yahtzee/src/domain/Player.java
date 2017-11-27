@@ -12,7 +12,7 @@ public class Player {
 	}
 
 	private void setUsername(String username) {
-		if (username.isEmpty() || username == null){
+		if (username.isEmpty() || username == null) {
 			throw new IllegalArgumentException("Name cannot be empty.");
 		}
 		this.username = username;
@@ -20,6 +20,10 @@ public class Player {
 
 	public String getUsername() {
 		return this.username;
+	}
+
+	public GameScreen getGameScreen() {
+		return screen;
 	}
 
 }
