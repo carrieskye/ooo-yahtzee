@@ -1,39 +1,30 @@
 package domain;
 
-import java.util.Observable;
-import java.util.Observer;
-
 import view.GameScreen;
 
-public class Player implements Observer {
+public class Player {
 	private String username;
-	private GameScreen veld;
+	private GameScreen screen;
 
-	public Player(String username) throws DomainException {
-		this.setUsername(username);
-		veld = new GameScreen();
+	public Player(String username) {
+		setUsername(username);
+		screen = new GameScreen(this);
+		screen.show();
 	}
 
-	@Override
-	public void update(Observable o, Object arg) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void setUsername(String username) throws DomainException {
-		if (username.equals(null) || username.trim().isEmpty()) {
-			throw new DomainException("Username cannot be empty.");
-		} else {
-			this.username = username;
+	private void setUsername(String username) {
+		if (username.isEmpty() || username == null) {
+			throw new IllegalArgumentException("Name cannot be empty.");
 		}
+		this.username = username;
 	}
 
 	public String getUsername() {
-		return username;
+		return this.username;
 	}
 
 	public GameScreen getGameScreen() {
-		return veld;
+		return screen;
 	}
 
 }
