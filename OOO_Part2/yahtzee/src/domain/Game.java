@@ -21,11 +21,28 @@ public class Game {
 		return players;
 	}
 
-	public void registerPlayer(Player player) {
+	public void registerPlayer(Player player) throws DomainException {
 		if (players.isEmpty()) {
 			setCurrentPlayer(player);
 		}
+		for (Player existingPlayer : players) {
+			if (existingPlayer.getUsername().equals(player.getUsername())) {
+				throw new DomainException("Player already exists.");
+			}
+		}
 		players.add(player);
+	}
+
+	public void registerPlayer(String username) throws DomainException {
+		if (players.isEmpty()) {
+			setCurrentPlayer(new Player(username));
+		}
+		for (Player existingPlayer : players) {
+			if (existingPlayer.getUsername().equals(username)) {
+				throw new DomainException("Player already exists.");
+			}
+		}
+		players.add(new Player(username));
 	}
 
 	public Player getPlayer(String username) throws DomainException {
@@ -49,7 +66,7 @@ public class Game {
 		return currentPlayer;
 	}
 
-	public void setCurrentPlayer(Player currentPlayer) {
+	private void setCurrentPlayer(Player currentPlayer) {
 		this.currentPlayer = currentPlayer;
 	}
 

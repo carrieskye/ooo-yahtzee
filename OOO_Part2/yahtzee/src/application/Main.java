@@ -2,6 +2,9 @@ package application;
 
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
+import domain.DomainException;
 import domain.Game;
 import domain.Player;
 import javafx.application.Application;
@@ -69,7 +72,7 @@ public class Main extends Application {
 			primaryStage.setScene(scene);
 			primaryStage.show();
 		} catch (Exception e) {
-			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, e.getMessage());
 		}
 	}
 
@@ -92,15 +95,15 @@ public class Main extends Application {
 			playerNames += player.getUsername() + "\n";
 		}
 		currentPlayersLabel.setText(playerNames);
-		
+
 		if (game.getPlayers().size() == 2) {
 			hboxLow.getChildren().add(launchYahtzee);
 		}
 	}
-	
-	public void startScreen(Player player){
+
+	public void startScreen(Player player) {
 		Stage stage = new Stage();
-		Scene scene = new Scene(player.getGameScreen(),900,600);
+		Scene scene = new Scene(player.getGameScreen(), 900, 600);
 		stage.setTitle("Screen of " + player.getUsername());
 		stage.setScene(scene);
 		stage.show();
@@ -111,10 +114,14 @@ public class Main extends Application {
 		@Override
 		public void handle(ActionEvent event) {
 			Player player = new Player(playerField.getText());
-			game.registerPlayer(player);
+			try {
+				game.registerPlayer(player);
+			} catch (DomainException e) {
+				JOptionPane.showMessageDialog(null, e.getMessage());
+			}
 			playerField.clear();
 			updateCurrentPlayers();
-			primaryStage.setHeight(200+18*game.getPlayers().size());
+			primaryStage.setHeight(200 + 18 * game.getPlayers().size());
 			startScreen(player);
 		}
 	}
