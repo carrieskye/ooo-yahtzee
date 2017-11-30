@@ -1,15 +1,10 @@
-package application;
+package view;
 
 import java.util.ArrayList;
-
 import javax.swing.JOptionPane;
-
 import domain.DomainException;
 import domain.Game;
 import domain.Player;
-import javafx.application.Application;
-import javafx.stage.Stage;
-
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -20,66 +15,49 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
-public class Main extends Application {
-	Game game;
-	BorderPane root;
-	Scene scene;
-	HBox hboxHigh = new HBox(5), hboxLow = new HBox(5);
-	VBox vbox = new VBox(5);
-	Label gameLabel, playerLabel, currentPlayersLabel;
-	TextField playerField;
-	Stage primaryStage;
-	Button addPlayer, launchYahtzee;
-	ArrayList<Stage> playerStages = new ArrayList<>();
+public class StartScreen extends BorderPane {
+	private Game game;
+	private HBox hboxHigh = new HBox(5), hboxLow = new HBox(5);
+	private VBox vbox = new VBox(5);
+	private Label gameLabel, playerLabel, currentPlayersLabel;
+	private TextField playerField;
+	private Stage primaryStage;
+	private Button addPlayer, launchYahtzee;
+	private ArrayList<Stage> playerStages = new ArrayList<>();
+	
+	public StartScreen(Game game, Stage primaryStage) {
+		this.primaryStage = primaryStage;
+		setGame(game);
+		
+		hboxHigh.setAlignment(Pos.CENTER);
+		hboxHigh.setMinHeight(50);
+		hboxLow.setAlignment(Pos.CENTER);
+		hboxLow.setMinHeight(50);
+		vbox.setAlignment(Pos.TOP_CENTER);
 
-	@Override
-	public void start(Stage primaryStage) {
-		try {
-			this.primaryStage = primaryStage;
-			game = Game.getInstance();
-			root = new BorderPane();
-			scene = new Scene(root, 380, 200);
-			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+		gameLabel = new Label("Yahtzee");
+		setLabelLayout(gameLabel);
 
-			hboxHigh.setAlignment(Pos.CENTER);
-			hboxHigh.setMinHeight(50);
-			hboxLow.setAlignment(Pos.CENTER);
-			hboxLow.setMinHeight(50);
-			vbox.setAlignment(Pos.TOP_CENTER);
+		playerLabel = new Label("Enter name of player:");
+		playerField = new TextField();
+		currentPlayersLabel = new Label();
 
-			gameLabel = new Label("Yahtzee");
-			setLabelLayout(gameLabel);
+		hboxHigh.getChildren().addAll(playerLabel, playerField);
+		vbox.getChildren().addAll(hboxHigh, currentPlayersLabel);
 
-			playerLabel = new Label("Enter name of player:");
-			playerField = new TextField();
-			currentPlayersLabel = new Label();
+		addPlayer = new Button("Add Player");
+		addPlayer.setOnAction(new AddPlayerHandler());
+		hboxLow.getChildren().add(addPlayer);
+		launchYahtzee = new Button("Launch Yahtzee");
+		launchYahtzee.setOnAction(new LaunchYahtzeeHandler());
 
-			hboxHigh.getChildren().addAll(playerLabel, playerField);
-			vbox.getChildren().addAll(hboxHigh, currentPlayersLabel);
-
-			addPlayer = new Button("Add Player");
-			addPlayer.setOnAction(new AddPlayerHandler());
-			hboxLow.getChildren().add(addPlayer);
-			launchYahtzee = new Button("Launch Yahtzee");
-			launchYahtzee.setOnAction(new LaunchYahtzeeHandler());
-
-			root.setTop(gameLabel);
-			root.setCenter(vbox);
-			root.setBottom(hboxLow);
-
-			primaryStage.setTitle("GameSuite");
-			primaryStage.setScene(scene);
-			primaryStage.show();
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, e.getMessage());
-		}
+		this.setTop(gameLabel);
+		this.setCenter(vbox);
+		this.setBottom(hboxLow);
 	}
-
-	public static void main(String[] args) {
-		launch(args);
-
-	}
+	
 
 	public Label setLabelLayout(Label label) {
 		label.setStyle(
@@ -101,7 +79,7 @@ public class Main extends Application {
 		}
 	}
 
-	public void startScreen(Player player) {
+	public void startPlayerScreen(Player player) {
 		Stage stage = new Stage();
 		Scene scene = new Scene(player.getGameScreen(), 900, 600);
 		stage.setTitle("Screen of " + player.getUsername());
@@ -122,7 +100,7 @@ public class Main extends Application {
 			playerField.clear();
 			updateCurrentPlayers();
 			primaryStage.setHeight(200 + 18 * game.getPlayers().size());
-			startScreen(player);
+			startPlayerScreen(player);
 		}
 	}
 
@@ -134,4 +112,11 @@ public class Main extends Application {
 		}
 	}
 
+	public Game getGame() {
+		return game;
+	}
+
+	private void setGame(Game game) {
+		this.game = game;
+	}
 }
