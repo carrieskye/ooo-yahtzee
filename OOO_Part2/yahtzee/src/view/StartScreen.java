@@ -19,55 +19,55 @@ import javafx.stage.Stage;
 
 public class StartScreen extends BorderPane {
 	private Game game;
-	private HBox hboxHigh, hboxLow;
-	private VBox vbox;
+	private HBox hBoxNewPlayers, hBoxButtons;
+	private VBox vBoxNewPlayers;
 	private Label gameLabel, playerLabel, currentPlayersLabel;
 	private TextField playerField;
 	private Stage primaryStage;
 	private Button addPlayer, launchYahtzee;
 	private ArrayList<Stage> playerStages = new ArrayList<>();
 
-	public StartScreen(Game game, Stage primaryStage) {
+	public StartScreen(Game game, Stage primaryStage) throws Exception {
 		this.primaryStage = primaryStage;
-		setGame(game);
-		hboxHigh = new HBox(5);
-		hboxLow = new HBox(5);
-		vbox = new VBox(5);
+		this.game = game;
+		hBoxNewPlayers = new HBox(5);
+		hBoxButtons = new HBox(5);
+		vBoxNewPlayers = new VBox(5);
 		makeGameLabel();
 		makePlayersInput();
 		makeButtons();
 	}
 
-	public void makeGameLabel() {
+	private void makeGameLabel() {
 		gameLabel = new Label("Yahtzee");
 		setLabelLayout(gameLabel);
 		this.setTop(gameLabel);
 	}
 
-	public void makePlayersInput() {
-		vbox.setAlignment(Pos.TOP_CENTER);
-		hboxHigh.setAlignment(Pos.CENTER);
-		hboxHigh.setMinHeight(50);
+	private void makePlayersInput() {
+		vBoxNewPlayers.setAlignment(Pos.TOP_CENTER);
+		hBoxNewPlayers.setAlignment(Pos.CENTER);
+		hBoxNewPlayers.setMinHeight(50);
 		playerLabel = new Label("Enter name of player:");
 		playerField = new TextField();
 		currentPlayersLabel = new Label();
-		hboxHigh.getChildren().addAll(playerLabel, playerField);
-		vbox.getChildren().addAll(hboxHigh, currentPlayersLabel);
-		this.setCenter(vbox);
+		hBoxNewPlayers.getChildren().addAll(playerLabel, playerField);
+		vBoxNewPlayers.getChildren().addAll(hBoxNewPlayers, currentPlayersLabel);
+		this.setCenter(vBoxNewPlayers);
 	}
 
-	public void makeButtons() {
-		hboxLow.setAlignment(Pos.CENTER);
-		hboxLow.setMinHeight(50);
+	private void makeButtons() {
+		hBoxButtons.setAlignment(Pos.CENTER);
+		hBoxButtons.setMinHeight(50);
 		addPlayer = new Button("Add Player");
 		addPlayer.setOnAction(new AddPlayerHandler());
-		hboxLow.getChildren().add(addPlayer);
+		hBoxButtons.getChildren().add(addPlayer);
 		launchYahtzee = new Button("Launch Yahtzee");
 		launchYahtzee.setOnAction(new LaunchYahtzeeHandler());
-		this.setBottom(hboxLow);
+		this.setBottom(hBoxButtons);
 	}
 
-	public Label setLabelLayout(Label label) {
+	private Label setLabelLayout(Label label) {
 		label.setStyle(
 				"-fx-background-color: #FFFFFF; -fx-alignment: center; -fx-font: 25px Tahoma; -fx-font-weight: bold");
 		label.setMinHeight(50);
@@ -75,7 +75,7 @@ public class StartScreen extends BorderPane {
 		return label;
 	}
 
-	public void updateCurrentPlayers() {
+	private void updateCurrentPlayers() {
 		String playerNames = "Current players:\n";
 		for (Player player : game.getPlayers()) {
 			playerNames += player.getUsername() + "\n";
@@ -83,11 +83,11 @@ public class StartScreen extends BorderPane {
 		currentPlayersLabel.setText(playerNames);
 
 		if (game.getPlayers().size() == 2) {
-			hboxLow.getChildren().add(launchYahtzee);
+			hBoxButtons.getChildren().add(launchYahtzee);
 		}
 	}
 
-	public void startPlayerScreen(Player player) {
+	private void startPlayerScreen(Player player) {
 		Stage stage = new Stage();
 		Scene scene = new Scene(player.getGameScreen(), 900, 600);
 		stage.setTitle("Screen of " + player.getUsername());
@@ -99,7 +99,7 @@ public class StartScreen extends BorderPane {
 	class AddPlayerHandler implements EventHandler<ActionEvent> {
 		@Override
 		public void handle(ActionEvent event) {
-			Player player = new Player(playerField.getText());
+			Player player = new Player(game, playerField.getText());
 			try {
 				game.registerPlayer(player);
 			} catch (DomainException e) {
@@ -120,11 +120,4 @@ public class StartScreen extends BorderPane {
 		}
 	}
 
-	public Game getGame() {
-		return game;
-	}
-
-	private void setGame(Game game) {
-		this.game = game;
-	}
 }

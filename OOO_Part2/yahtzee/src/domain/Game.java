@@ -2,10 +2,10 @@ package domain;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Observable;
 import view.GameScreen;
 
-public class Game {
+public class Game extends Observable {
 	private List<Player> players = new ArrayList<>();
 	private static Game uniqueInstance = new Game();
 	private Player currentPlayer;
@@ -34,15 +34,16 @@ public class Game {
 	}
 
 	public void registerPlayer(String username) throws DomainException {
+		Player player = new Player(this, username);
 		if (players.isEmpty()) {
-			setCurrentPlayer(new Player(username));
+			setCurrentPlayer(player);
 		}
 		for (Player existingPlayer : players) {
 			if (existingPlayer.getUsername().equals(username)) {
 				throw new DomainException("Player already exists.");
 			}
 		}
-		players.add(new Player(username));
+		players.add(player);
 	}
 
 	public Player getPlayer(String username) throws DomainException {
@@ -75,6 +76,7 @@ public class Game {
 			if (players.get(i).equals(getCurrentPlayer())) {
 				try {
 					setCurrentPlayer(players.get(i + 1));
+					somethingChanged();
 				} catch (NullPointerException e) {
 					setCurrentPlayer(players.get(0));
 				}
@@ -82,8 +84,17 @@ public class Game {
 		}
 	}
 	
-	public void startGame(){
-		//TODO
+	public void showDice(){
+		somethingChanged();
+	}
+
+	public void startGame() {
+		somethingChanged();
+	}
+	
+	public void somethingChanged(){
+		setChanged();
+		notifyObservers();
 	}
 
 }
