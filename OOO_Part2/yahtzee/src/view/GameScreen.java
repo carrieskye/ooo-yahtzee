@@ -1,8 +1,6 @@
 package view;
 
 import java.util.ArrayList;
-
-import domain.Dice;
 import domain.Player;
 import domain.ThrownDice;
 import javafx.event.ActionEvent;
@@ -22,12 +20,12 @@ public class GameScreen extends BorderPane {
 	private HBox hBoxGame, hBoxPlayer, hBoxThrownDice, hBoxPickedDice;
 	private VBox vBoxDice;
 	private Button rollDiceButton;
-	private Label currentPlayerLabel;
+	private Label currentPlayerLabelBottom, currentPlayerLabelCenter;
 
-	public GameScreen(Player player) {
+	public GameScreen(Player player, Player currentPlayer) {
 		setPlayer(player);
 		makeTop();
-		makeBottom();
+		makeBottom(currentPlayer);
 	}
 
 	public void makeTop() {
@@ -38,11 +36,11 @@ public class GameScreen extends BorderPane {
 		this.setTop(hBoxGame);
 	}
 
-	public void makeBottom() {
+	public void makeBottom(Player currentPlayer) {
 		hBoxPlayer = new HBox(5);
-		Label playerLabel = new Label(player.getUsername() + " playing");
-		playerLabel.getStyleClass().add("player-label");
-		hBoxPlayer.getChildren().add(playerLabel);
+		currentPlayerLabelBottom = new Label(currentPlayer.getUsername() + " playing");
+		currentPlayerLabelBottom.getStyleClass().add("player-label");
+		hBoxPlayer.getChildren().add(currentPlayerLabelBottom);
 		this.setBottom(hBoxPlayer);
 	}
 
@@ -53,11 +51,12 @@ public class GameScreen extends BorderPane {
 		makeDiceField(rollDiceButton, player);
 	}
 
-	public void observeCurrentPlayer(Player player) {
-		currentPlayerLabel = new Label(player.getUsername() + " is currently playing.");
-		makeDiceField(currentPlayerLabel, player);
-		if (!player.getThrownDice().isEmpty()) {
-			currentPlayerLabel.setText(player.getUsername() + " threw:");
+	public void observeCurrentPlayer(Player currentPlayer) {
+		currentPlayerLabelBottom.setText(currentPlayer.getUsername() + " playing");
+		currentPlayerLabelCenter = new Label("Waiting for " + currentPlayer.getUsername() + " to throw.");
+		makeDiceField(currentPlayerLabelCenter, currentPlayer);
+		if (!currentPlayer.getThrownDice().isEmpty()) {
+			currentPlayerLabelCenter.setText(currentPlayer.getUsername() + " threw:");
 		}
 
 	}

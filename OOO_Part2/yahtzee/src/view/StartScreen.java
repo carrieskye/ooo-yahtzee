@@ -1,7 +1,6 @@
 package view;
 
 import java.util.ArrayList;
-import javax.swing.JOptionPane;
 import domain.DomainException;
 import domain.Game;
 import domain.Player;

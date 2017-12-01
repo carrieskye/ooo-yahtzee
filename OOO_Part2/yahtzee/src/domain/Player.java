@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Random;
-
-import javafx.util.Pair;
 import view.GameScreen;
 
 public class Player implements Observer {
@@ -19,7 +17,11 @@ public class Player implements Observer {
 		game.addObserver(this);
 		setUsername(username);
 		this.game = game;
-		screen = new GameScreen(this);
+		if (game.getCurrentPlayer() == null) {
+			screen = new GameScreen(this, this);
+		} else {
+			screen = new GameScreen(this, game.getCurrentPlayer());
+		}
 		thrownDice = new ArrayList<>();
 		pickedDice = new ArrayList<>();
 	}
@@ -113,7 +115,7 @@ public class Player implements Observer {
 		if (game.getCurrentPlayer().equals(this)) {
 			playTurn();
 		} else {
-			// observeCurrentPlayer(game.getCurrentPlayer());
+			observeCurrentPlayer(game.getCurrentPlayer());
 		}
 	}
 
