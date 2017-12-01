@@ -24,4 +24,5 @@ public enum Dice {
 		return this.img;
 	}
 
+
 }

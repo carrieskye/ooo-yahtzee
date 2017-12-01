@@ -1,6 +1,10 @@
 package view;
 
+import java.util.ArrayList;
+
+import domain.Dice;
 import domain.Player;
+import domain.ThrownDice;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -15,14 +19,12 @@ import javafx.scene.layout.VBox;
 
 public class GameScreen extends BorderPane {
 	private Player player;
-	private HBox hBoxGame, hBoxPlayer, hBoxDiceImages;
+	private HBox hBoxGame, hBoxPlayer, hBoxThrownDice, hBoxPickedDice;
 	private VBox vBoxDice;
 	private Button rollDiceButton;
-	private ImageView[] diceImages;
 	private Label currentPlayerLabel;
 
 	public GameScreen(Player player) {
-		diceImages = new ImageView[5];
 		setPlayer(player);
 		makeTop();
 		makeBottom();
@@ -30,31 +32,18 @@ public class GameScreen extends BorderPane {
 
 	public void makeTop() {
 		hBoxGame = new HBox(5);
-		Label gameLabel = setLabelLayout(new Label("Yahtzee"), 25, 900, 50, true, true);
+		Label gameLabel = new Label("Yahtzee");
+		gameLabel.getStyleClass().add("game-label");
 		hBoxGame.getChildren().add(gameLabel);
 		this.setTop(hBoxGame);
 	}
 
 	public void makeBottom() {
 		hBoxPlayer = new HBox(5);
-		Label playerLabel = setLabelLayout(new Label(player.getUsername() + " playing"), 20, 900, 50, true, false);
+		Label playerLabel = new Label(player.getUsername() + " playing");
+		playerLabel.getStyleClass().add("player-label");
 		hBoxPlayer.getChildren().add(playerLabel);
 		this.setBottom(hBoxPlayer);
-	}
-
-	public Label setLabelLayout(Label label, int fontsize, int width, int height, boolean background, boolean bold) {
-		String style = "";
-		if (background) {
-			style += "-fx-background-color: #FFFFFF;";
-		}
-		style += "-fx-font: " + fontsize + "px Tahoma;";
-		if (bold) {
-			style += "-fx-font-weight: bold;";
-		}
-		label.setStyle(style + "-fx-alignment: center");
-		label.setMinHeight(height);
-		label.setMinWidth(width);
-		return label;
 	}
 
 	public void playTurn() {
@@ -65,8 +54,7 @@ public class GameScreen extends BorderPane {
 	}
 
 	public void observeCurrentPlayer(Player player) {
-		currentPlayerLabel = setLabelLayout(new Label(player.getUsername() + " is currently playing."), 15, 900, 50,
-				false, false);
+		currentPlayerLabel = new Label(player.getUsername() + " is currently playing.");
 		makeDiceField(currentPlayerLabel, player);
 		if (!player.getThrownDice().isEmpty()) {
 			currentPlayerLabel.setText(player.getUsername() + " threw:");
@@ -77,28 +65,40 @@ public class GameScreen extends BorderPane {
 	public void makeDiceField(Node node, Player player) {
 		vBoxDice = new VBox(5);
 		vBoxDice.setAlignment(Pos.TOP_CENTER);
-		vBoxDice.setPadding(new Insets(15, 12, 15, 12));
-		hBoxDiceImages = new HBox(5);
-		hBoxDiceImages.setAlignment(Pos.CENTER);
-		hBoxDiceImages.setPadding(new Insets(15, 12, 15, 12));
-		for (int i = 0; i < 5; i++) {
-			diceImages[i] = new ImageView();
-			diceImages[i].setFitWidth(40);
-			diceImages[i].setFitHeight(40);
-			hBoxDiceImages.getChildren().add(diceImages[i]);
-		}
-		vBoxDice.getChildren().addAll(node, hBoxDiceImages);
+		vBoxDice.setPadding(new Insets(15, 0, 0, 0));
+		hBoxThrownDice = new HBox(5);
+		hBoxThrownDice.getStyleClass().add("dice-images");
+		hBoxPickedDice = new HBox(5);
+		hBoxPickedDice.getStyleClass().add("dice-images");
+		vBoxDice.getChildren().addAll(node, hBoxThrownDice, hBoxPickedDice);
 		this.setCenter(vBoxDice);
 		if (!player.getThrownDice().isEmpty()) {
-			throwDice(player);
+			loadDice(player.getThrownDice(), hBoxThrownDice, false);
+			if (!player.getPickedDice().isEmpty()) {
+				loadDice(player.getPickedDice(), hBoxPickedDice, true);
+			}
 		}
 	}
 
-	public void throwDice(Player player) {
-		hBoxDiceImages.getChildren().clear();
-		for (int i = 0; i < diceImages.length; i++) {
-			diceImages[i].setImage(player.getThrownDice().get(i).getImage());
-			hBoxDiceImages.getChildren().add(diceImages[i]);
+	public void loadDice(ArrayList<ThrownDice> diceList, HBox hbox, Boolean picked) {
+		hbox.getChildren().clear();
+		ImageView imageView;
+		for (ThrownDice dice : diceList) {
+			imageView = new ImageView();
+			imageView.setImage(dice.getDice().getImage());
+			imageView.setFitWidth(40);
+			imageView.setFitHeight(40);
+			Button button = new Button(null, imageView);
+			button.getStyleClass().add("dice-button");
+			if (!picked) {
+				button.setOnAction(new SetAsideHandler());
+				if (dice.isPicked()) {
+					button.setVisible(false);
+				}
+			} else {
+				button.setOnAction(new ReturnHandler());
+			}
+			hbox.getChildren().add(button);
 		}
 	}
 
@@ -114,6 +114,30 @@ public class GameScreen extends BorderPane {
 		@Override
 		public void handle(ActionEvent event) {
 			player.throwDice();
+		}
+	}
+
+	class SetAsideHandler implements EventHandler<ActionEvent> {
+		@Override
+		public void handle(ActionEvent event) {
+			for (Node node : hBoxThrownDice.getChildren()) {
+				Button button = (Button) node;
+				if (button.equals(event.getSource())) {
+					player.pickDice(hBoxThrownDice.getChildren().indexOf(button));
+				}
+			}
+		}
+	}
+
+	class ReturnHandler implements EventHandler<ActionEvent> {
+		@Override
+		public void handle(ActionEvent event) {
+			for (Node node : hBoxPickedDice.getChildren()) {
+				Button button = (Button) node;
+				if (button.equals(event.getSource())) {
+					player.returnDice(hBoxPickedDice.getChildren().indexOf(button));
+				}
+			}
 		}
 	}
 

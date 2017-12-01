@@ -90,6 +90,7 @@ public class StartScreen extends BorderPane {
 	private void startPlayerScreen(Player player) {
 		Stage stage = new Stage();
 		Scene scene = new Scene(player.getGameScreen(), 900, 600);
+		scene.getStylesheets().addAll(primaryStage.getScene().getStylesheets());
 		stage.setTitle("Screen of " + player.getUsername());
 		stage.setScene(scene);
 		stage.show();
@@ -99,16 +100,18 @@ public class StartScreen extends BorderPane {
 	class AddPlayerHandler implements EventHandler<ActionEvent> {
 		@Override
 		public void handle(ActionEvent event) {
-			Player player = new Player(game, playerField.getText());
 			try {
+				Player player = new Player(game, playerField.getText());
 				game.registerPlayer(player);
+				playerField.clear();
+				playerField.setPromptText("");
+				updateCurrentPlayers();
+				primaryStage.setHeight(200 + 18 * game.getPlayers().size());
+				startPlayerScreen(player);
 			} catch (DomainException e) {
-				JOptionPane.showMessageDialog(null, e.getMessage());
-			}
-			playerField.clear();
-			updateCurrentPlayers();
-			primaryStage.setHeight(200 + 18 * game.getPlayers().size());
-			startPlayerScreen(player);
+				playerField.clear();				
+				playerField.setPromptText(e.getMessage());
+			}	
 		}
 	}
 
