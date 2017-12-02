@@ -12,26 +12,25 @@ public class Player implements Observer {
 	private GameScreen screen;
 	private ArrayList<ThrownDice> thrownDice;
 	private ArrayList<ThrownDice> pickedDice;
+	private ArrayList<CategoryScore> categoryScore;
+	private CategoryScore currentCategory;
+	private int turn;
 
 	public Player(Game game, String username) throws DomainException {
 		game.addObserver(this);
 		setUsername(username);
 		this.game = game;
+		this.turn = 0;
+		
 		if (game.getCurrentPlayer() == null) {
 			screen = new GameScreen(this, this);
 		} else {
 			screen = new GameScreen(this, game.getCurrentPlayer());
 		}
+		
 		thrownDice = new ArrayList<>();
 		pickedDice = new ArrayList<>();
-	}
-
-	public void playTurn() {
-		screen.playTurn();
-	}
-
-	public void observeCurrentPlayer(Player player) {
-		screen.observeCurrentPlayer(player);
+		categoryScore = new ArrayList<>();
 	}
 
 	public void throwDice() {
@@ -43,6 +42,9 @@ public class Player implements Observer {
 			for (ThrownDice dice : thrownDice) {
 				if (!dice.isPicked()) {
 					thrownDice.set(thrownDice.indexOf(dice), getRandomDice());
+					if (currentCategory != null){
+						calculateCategoryScore(currentCategory.getCategory());
+					}
 				}
 			}
 		}
@@ -85,6 +87,26 @@ public class Player implements Observer {
 		pickedDice.remove(index);
 		game.showDice();
 	}
+	
+	public void endTurn(){
+		categoryScore.add(currentCategory);
+		turn += 1;
+		game.updateCurrentPlayer();
+	}
+
+	public void calculateCategoryScore(Category category) {
+		ArrayList<Dice> categoryDice = new ArrayList<>();
+		for (ThrownDice dice : pickedDice) {
+			categoryDice.add(dice.getDice());
+		}
+		for (ThrownDice dice : thrownDice) {
+			if (!dice.isPicked()) {
+				categoryDice.add(dice.getDice());
+			}
+		}
+		this.currentCategory = new CategoryScore(category, categoryDice);
+		game.showDice();
+	}
 
 	private void setUsername(String username) throws DomainException {
 		if (username.isEmpty() || username == null) {
@@ -109,14 +131,18 @@ public class Player implements Observer {
 		return this.pickedDice;
 	}
 
+	public CategoryScore getCategoryScore() {
+		return this.currentCategory;
+	}
+	
+	public int getTurn(){
+		return this.turn;
+	}
+
 	@Override
 	public void update(Observable o, Object arg) {
 		this.game = (Game) o;
-		if (game.getCurrentPlayer().equals(this)) {
-			playTurn();
-		} else {
-			observeCurrentPlayer(game.getCurrentPlayer());
-		}
+		screen.update(game.getCurrentPlayer());
 	}
 
 }

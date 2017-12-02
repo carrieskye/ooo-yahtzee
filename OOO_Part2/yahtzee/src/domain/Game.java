@@ -9,6 +9,7 @@ public class Game extends Observable {
 	private List<Player> players = new ArrayList<>();
 	private static Game uniqueInstance = new Game();
 	private Player currentPlayer;
+	private static final int MAX_TURN = 13;
 
 	private Game() {
 	}
@@ -77,22 +78,27 @@ public class Game extends Observable {
 				try {
 					setCurrentPlayer(players.get(i + 1));
 					somethingChanged();
-				} catch (NullPointerException e) {
-					setCurrentPlayer(players.get(0));
+				} catch (IndexOutOfBoundsException e) {
+					if (players.get(0).getTurn() < MAX_TURN) {
+						setCurrentPlayer(players.get(0));
+					}
 				}
 			}
 		}
 	}
-	
-	public void showDice(){
+
+	public void showDice() {
 		somethingChanged();
 	}
 
 	public void startGame() {
-		somethingChanged();
+		for (Player player : players) {
+			player.getGameScreen().start();
+		}
+
 	}
-	
-	public void somethingChanged(){
+
+	public void somethingChanged() {
 		setChanged();
 		notifyObservers();
 	}
