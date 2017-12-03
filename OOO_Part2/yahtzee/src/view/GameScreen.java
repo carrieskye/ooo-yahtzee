@@ -6,16 +6,16 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 
 public class GameScreen extends BorderPane {
-	private GameScreenStrategy strategy;
+	private Player player;
+	private GameScreenStrategy currentStrategy, playingStrategy, observingStrategy;
 	private HBox hBoxGame, hBoxPlayer;
 	private Label currentPlayerLabelBottom, gameLabel;
 
 	public GameScreen(Player player, Player currentPlayer) {
-		if (player.equals(currentPlayer)) {
-			strategy = new PlayingStrategy(player);
-		} else {
-			strategy = new ObservingStrategy(player, currentPlayer);
-		}
+		this.player = player;
+		playingStrategy = new PlayingStrategy(player);
+		observingStrategy = new ObservingStrategy(player, currentPlayer);
+		updateStrategy(currentPlayer);
 		makeTop();
 		makeBottom(currentPlayer);
 	}
@@ -28,7 +28,6 @@ public class GameScreen extends BorderPane {
 		this.setTop(hBoxGame);
 	}
 
-
 	public void makeBottom(Player currentPlayer) {
 		hBoxPlayer = new HBox(5);
 		currentPlayerLabelBottom = new Label(currentPlayer.getUsername() + " playing");
@@ -36,14 +35,26 @@ public class GameScreen extends BorderPane {
 		hBoxPlayer.getChildren().add(currentPlayerLabelBottom);
 		this.setBottom(hBoxPlayer);
 	}
-	
-	public void start(){
-		strategy.makeCenter();
+
+	public void start() {
+		playingStrategy.makeCenter();
+		observingStrategy.makeCenter();
+		currentStrategy.setStrategyCenter();	
+		}
+
+	public void updateStrategy(Player currentPlayer) {
+		if (player.equals(currentPlayer)) {
+			currentStrategy = playingStrategy;
+		} else {
+			currentStrategy = observingStrategy;
+		}
 	}
-	
-	public void update(Player currentPlayer){
+
+	public void update(Player currentPlayer) {
 		currentPlayerLabelBottom.setText(currentPlayer.getUsername() + " playing");
-		strategy.updateField(currentPlayer);
+		updateStrategy(currentPlayer);
+		currentStrategy.setStrategyCenter();
+		currentStrategy.updateField(currentPlayer);
 	}
 
 }

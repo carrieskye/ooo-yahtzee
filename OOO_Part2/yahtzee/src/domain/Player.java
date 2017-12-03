@@ -90,7 +90,12 @@ public class Player implements Observer {
 	
 	public void endTurn(){
 		categoryScore.add(currentCategory);
+		thrownDice.clear();
+		System.out.println(thrownDice.size());
+		pickedDice.clear();
+		currentCategory = null;
 		turn += 1;
+		game.showDice();
 		game.updateCurrentPlayer();
 	}
 

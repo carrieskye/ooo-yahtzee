@@ -58,9 +58,10 @@ public class PlayingStrategy implements GameScreenStrategy {
 		categoryBox = new ComboBox<String>(options);
 		categoryBox.setOnAction(new CategoryHandler());
 		categoryBox.setVisible(false);
+		categoryBox.setPromptText("Category");
 		pointsLabel = new Label();
 		hBoxCategory.getChildren().addAll(categoryBox, pointsLabel);
-		
+
 		submitButton = new Button("Ok");
 		submitButton.setOnAction(new SubmitHandler());
 		submitButton.setAlignment(Pos.CENTER);
@@ -68,15 +69,16 @@ public class PlayingStrategy implements GameScreenStrategy {
 
 		vBoxDice.getChildren().add(0, rollDiceButton);
 		vBoxDice.getChildren().add(submitButton);
+	}
+	
+	public void setStrategyCenter(){
 		player.getGameScreen().setCenter(vBoxDice);
-
-		updateField(this.player);
 	}
 
 	@Override
 	public void updateField(Player player) {
 		this.player = player;
-		if (rolls >= 3){
+		if (rolls >= 3) {
 			rollDiceButton.setVisible(false);
 		}
 		if (!player.getThrownDice().isEmpty()) {
@@ -85,13 +87,10 @@ public class PlayingStrategy implements GameScreenStrategy {
 			if (!hBoxPickedDice.getChildren().isEmpty() || !player.getPickedDice().isEmpty()) {
 				loadDice(player.getPickedDice(), hBoxPickedDice, true);
 			}
-			if (categoryBox.getPromptText() == "") {
-				categoryBox.setPromptText("Category");
-			} else if (player.getCategoryScore() != null) {
+			if (player.getCategoryScore() != null) {
 				submitButton.setVisible(true);
 				pointsLabel.setText(player.getCategoryScore().getPoints() + " points");
 			}
-
 		}
 	}
 
@@ -106,11 +105,13 @@ public class PlayingStrategy implements GameScreenStrategy {
 			Button button = new Button(null, imageView);
 			button.getStyleClass().add("dice-button");
 			if (!picked) {
-				button.setOnAction(new SetAsideHandler());
+				if (rolls < 3) {
+					button.setOnAction(new SetAsideHandler());
+				}
 				if (dice.isPicked()) {
 					button.setVisible(false);
 				}
-			} else {
+			} else if (rolls < 3) {
 				button.setOnAction(new ReturnHandler());
 			}
 			hbox.getChildren().add(button);
@@ -157,15 +158,19 @@ public class PlayingStrategy implements GameScreenStrategy {
 			player.calculateCategoryScore(Category.valueOf(categoryBox.getValue()));
 		}
 	}
-	
+
 	class SubmitHandler implements EventHandler<ActionEvent> {
 		@Override
 		public void handle(ActionEvent event) {
 			rolls = 0;
+			hBoxPickedDice.getChildren().clear();
+			hBoxThrownDice.getChildren().clear();
+			categoryBox.setPromptText("Category");
+			categoryBox.setVisible(false);
+			pointsLabel.setText("");
+			submitButton.setVisible(false);
 			player.endTurn();
 		}
 	}
-	
-	
 
 }

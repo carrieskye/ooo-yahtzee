@@ -18,9 +18,9 @@ public class ObservingStrategy implements GameScreenStrategy {
 	private Player currentPlayer;
 	private Player player;
 
-	public ObservingStrategy(Player player, Player currentPlayer) {
+	public ObservingStrategy(Player player, Player initialCurrentPlayer) {
+		this.currentPlayer = initialCurrentPlayer;
 		this.player = player;
-		this.currentPlayer = currentPlayer;
 		initialize();
 	}
 
@@ -34,25 +34,29 @@ public class ObservingStrategy implements GameScreenStrategy {
 		categoryLabel = new Label();
 		vBoxDice.setAlignment(Pos.TOP_CENTER);
 		vBoxDice.setPadding(new Insets(15, 0, 0, 0));
-		vBoxDice.getChildren().addAll(hBoxThrownDice, hBoxPickedDice, categoryLabel);
+		vBoxDice.getChildren().addAll(currentPlayerLabelCenter, hBoxThrownDice, hBoxPickedDice, categoryLabel);
 	}
 
 	@Override
 	public void makeCenter() {
 		currentPlayerLabelCenter.setText("Waiting for " + currentPlayer.getUsername() + " to throw.");
-		player.getGameScreen().setCenter(vBoxDice);
 	}
 
-	public void observeCurrentPlayer(Player currentPlayer) {
-		if (!currentPlayer.getThrownDice().isEmpty()) {
-			currentPlayerLabelCenter.setText(currentPlayer.getUsername() + " threw:");
-		}
+	@Override
+	public void setStrategyCenter() {
+		player.getGameScreen().setCenter(vBoxDice);
 	}
 
 	@Override
 	public void updateField(Player currentPlayer) {
 		this.currentPlayer = currentPlayer;
-		if (!currentPlayer.getThrownDice().isEmpty()) {
+		if (currentPlayer.getThrownDice().isEmpty()) {
+			currentPlayerLabelCenter.setText("Waiting for " + currentPlayer.getUsername() + " to throw.");
+			hBoxThrownDice.getChildren().clear();
+			hBoxPickedDice.getChildren().clear();
+			categoryLabel.setText("");
+		} else {
+			currentPlayerLabelCenter.setText(currentPlayer.getUsername() + " threw:");
 			loadDice(currentPlayer.getThrownDice(), hBoxThrownDice, false);
 			if (!hBoxPickedDice.getChildren().isEmpty() || !currentPlayer.getPickedDice().isEmpty()) {
 				loadDice(currentPlayer.getPickedDice(), hBoxPickedDice, true);

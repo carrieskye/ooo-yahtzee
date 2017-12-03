@@ -69,22 +69,22 @@ public class Game extends Observable {
 	}
 
 	private void setCurrentPlayer(Player currentPlayer) {
-		this.currentPlayer = currentPlayer;
+		if (currentPlayer.getTurn() >= MAX_TURN) {
+			gameIsOver();
+		} else {
+			this.currentPlayer = currentPlayer;
+		}
 	}
 
 	public void updateCurrentPlayer() {
-		for (int i = 0; i < players.size(); i++) {
-			if (players.get(i).equals(getCurrentPlayer())) {
-				try {
-					setCurrentPlayer(players.get(i + 1));
-					somethingChanged();
-				} catch (IndexOutOfBoundsException e) {
-					if (players.get(0).getTurn() < MAX_TURN) {
-						setCurrentPlayer(players.get(0));
-					}
-				}
-			}
+		System.out.println("Current player: " + currentPlayer.getUsername());
+		if (players.indexOf(currentPlayer) == players.size() - 1) {
+			setCurrentPlayer(players.get(0));
+		} else {
+			setCurrentPlayer(players.get(players.indexOf(currentPlayer) + 1));
 		}
+		System.out.println("New player: " + currentPlayer.getUsername() + "/n");
+		somethingChanged();
 	}
 
 	public void showDice() {
@@ -95,7 +95,10 @@ public class Game extends Observable {
 		for (Player player : players) {
 			player.getGameScreen().start();
 		}
-
+	}
+	
+	public void gameIsOver(){
+		//TODO
 	}
 
 	public void somethingChanged() {
