@@ -172,6 +172,7 @@ public class PlayingStrategy implements GameScreenStrategy {
 			categoryBox.setVisible(false);
 			pointsLabel.setText("");
 			submitButton.setVisible(false);
+			rollDiceButton.setVisible(true);
 			player.endTurn();
 		}
 	}
