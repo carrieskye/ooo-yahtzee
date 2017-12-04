@@ -21,13 +21,13 @@ public class Player implements Observer {
 		setUsername(username);
 		this.game = game;
 		this.turn = 0;
-		
+
 		if (game.getCurrentPlayer() == null) {
 			screen = new GameScreen(this, this);
 		} else {
 			screen = new GameScreen(this, game.getCurrentPlayer());
 		}
-		
+
 		thrownDice = new ArrayList<>();
 		pickedDice = new ArrayList<>();
 		categoryScore = new ArrayList<>();
@@ -42,7 +42,7 @@ public class Player implements Observer {
 			for (ThrownDice dice : thrownDice) {
 				if (!dice.isPicked()) {
 					thrownDice.set(thrownDice.indexOf(dice), getRandomDice());
-					if (currentCategory != null){
+					if (currentCategory != null) {
 						calculateCategoryScore(currentCategory.getCategory());
 					}
 				}
@@ -87,8 +87,8 @@ public class Player implements Observer {
 		pickedDice.remove(index);
 		game.showDice();
 	}
-	
-	public void endTurn(){
+
+	public void endTurn() {
 		categoryScore.add(currentCategory);
 		thrownDice.clear();
 		pickedDice.clear();
@@ -138,8 +138,12 @@ public class Player implements Observer {
 	public CategoryScore getCategoryScore() {
 		return this.currentCategory;
 	}
-	
-	public int getTurn(){
+
+	public ArrayList<CategoryScore> getCategoryScoreList() {
+		return this.categoryScore;
+	}
+
+	public int getTurn() {
 		return this.turn;
 	}
 

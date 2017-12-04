@@ -1,6 +1,7 @@
 package view;
 
 import java.util.ArrayList;
+
 import domain.Player;
 import domain.ThrownDice;
 import javafx.geometry.Insets;
@@ -13,7 +14,7 @@ import javafx.scene.layout.VBox;
 
 public class ObservingStrategy implements GameScreenStrategy {
 	private VBox vBoxDice;
-	private HBox hBoxThrownDice, hBoxPickedDice;
+	private HBox hBoxThrownDice, hBoxPickedDice, hBoxScore;
 	private Label currentPlayerLabelCenter, categoryLabel;
 	private Player currentPlayer;
 	private Player player;
@@ -28,18 +29,25 @@ public class ObservingStrategy implements GameScreenStrategy {
 		vBoxDice = new VBox(5);
 		hBoxThrownDice = new HBox(5);
 		hBoxPickedDice = new HBox(5);
+		hBoxScore = new HBox(5);
 		hBoxThrownDice.getStyleClass().add("dice-images");
 		hBoxPickedDice.getStyleClass().add("dice-images");
+		hBoxScore.getStyleClass().add("dice-images");
 		currentPlayerLabelCenter = new Label();
 		categoryLabel = new Label();
 		vBoxDice.setAlignment(Pos.TOP_CENTER);
 		vBoxDice.setPadding(new Insets(15, 0, 0, 0));
-		vBoxDice.getChildren().addAll(currentPlayerLabelCenter, hBoxThrownDice, hBoxPickedDice, categoryLabel);
+		vBoxDice.getChildren().addAll(currentPlayerLabelCenter, hBoxThrownDice, hBoxPickedDice, categoryLabel,
+				hBoxScore);
 	}
 
 	@Override
 	public void makeCenter() {
 		currentPlayerLabelCenter.setText("Waiting for " + currentPlayer.getUsername() + " to throw.");
+	}
+
+	public void makeRight() {
+
 	}
 
 	@Override

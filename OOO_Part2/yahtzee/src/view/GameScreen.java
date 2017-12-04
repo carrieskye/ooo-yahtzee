@@ -1,9 +1,24 @@
 package view;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
+
+import domain.Category;
+import domain.CategoryScore;
 import domain.Player;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -14,6 +29,19 @@ public class GameScreen extends BorderPane {
 	private HBox hBoxGame, hBoxPlayField, hBoxPlayer;
 	private VBox vBoxPoints;
 	private Label currentPlayerLabelBottom, gameLabel;
+	private TableView scoreTable;
+	List<Integer> scoreList = new ArrayList<Integer>();for(
+	int i = 0;i<13;i++)
+	{
+		if (null == player.getCategoryScoreList().get(i)) {
+			scoreList.add(i, 0);
+		} else {
+			scoreList.add(i, player.getCategoryScoreList().get(i).getPoints());
+		}
+
+	}
+	private final ObservableList<Player> score =
+            FXCollections.observableArrayList();
 
 	public GameScreen(Player player, Player currentPlayer) {
 		this.player = player;
@@ -23,6 +51,7 @@ public class GameScreen extends BorderPane {
 		makeTop();
 		makeCenter();
 		makeBottom(currentPlayer);
+		makeRight();
 	}
 
 	public void makeTop() {
@@ -48,6 +77,20 @@ public class GameScreen extends BorderPane {
 		currentPlayerLabelBottom.getStyleClass().add("player-label");
 		hBoxPlayer.getChildren().add(currentPlayerLabelBottom);
 		this.setBottom(hBoxPlayer);
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void makeRight() {
+
+		scoreTable = new TableView();
+		scoreTable.setEditable(true);
+		TableColumn categoryCol = new TableColumn("Category");
+		TableColumn scoreCol = new TableColumn("Score");
+		scoreTable.getColumns().addAll(categoryCol, scoreCol);
+		categoryCol.setCellValueFactory(new PropertyValueFactory<>("Category"));
+		scoreCol.setCellValueFactory(new PropertyValueFactory<>("Score"));
+		scoreTable.setItems(value);
+		this.setRight(scoreTable);
 	}
 
 	public void start() {
