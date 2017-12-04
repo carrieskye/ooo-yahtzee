@@ -105,7 +105,7 @@ public class StartScreen extends BorderPane {
 				playerField.clear();
 				playerField.setPromptText("");
 				updateCurrentPlayers();
-				primaryStage.setHeight(200 + 18 * game.getPlayers().size());
+				primaryStage.setHeight(225 + 20 * game.getPlayers().size());
 				startPlayerScreen(player);
 			} catch (DomainException e) {
 				playerField.clear();				
