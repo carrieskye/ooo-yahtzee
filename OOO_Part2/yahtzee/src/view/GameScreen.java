@@ -1,14 +1,18 @@
 package view;
 
 import domain.Player;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 public class GameScreen extends BorderPane {
 	private Player player;
 	private GameScreenStrategy currentStrategy, playingStrategy, observingStrategy;
-	private HBox hBoxGame, hBoxPlayer;
+	private HBox hBoxGame, hBoxPlayField, hBoxPlayer;
+	private VBox vBoxPoints;
 	private Label currentPlayerLabelBottom, gameLabel;
 
 	public GameScreen(Player player, Player currentPlayer) {
@@ -17,6 +21,7 @@ public class GameScreen extends BorderPane {
 		observingStrategy = new ObservingStrategy(player, currentPlayer);
 		updateStrategy(currentPlayer);
 		makeTop();
+		makeCenter();
 		makeBottom(currentPlayer);
 	}
 
@@ -26,6 +31,15 @@ public class GameScreen extends BorderPane {
 		gameLabel.getStyleClass().add("game-label");
 		hBoxGame.getChildren().add(gameLabel);
 		this.setTop(hBoxGame);
+	}
+
+	public void makeCenter() {
+		hBoxPlayField = new HBox(5);
+		hBoxPlayField.getStyleClass().add("center");
+		vBoxPoints = new VBox(5);
+		vBoxPoints.setAlignment(Pos.TOP_CENTER);
+		vBoxPoints.setPadding(new Insets(15, 0, 0, 0));
+		this.setCenter(hBoxPlayField);
 	}
 
 	public void makeBottom(Player currentPlayer) {
@@ -39,8 +53,9 @@ public class GameScreen extends BorderPane {
 	public void start() {
 		playingStrategy.makeCenter();
 		observingStrategy.makeCenter();
-		currentStrategy.setStrategyCenter();	
-		}
+		currentStrategy.setStrategyCenter();
+		hBoxPlayField.getChildren().add(vBoxPoints);
+	}
 
 	public void updateStrategy(Player currentPlayer) {
 		if (player.equals(currentPlayer)) {
@@ -55,6 +70,10 @@ public class GameScreen extends BorderPane {
 		updateStrategy(currentPlayer);
 		currentStrategy.setStrategyCenter();
 		currentStrategy.updateField(currentPlayer);
+	}
+
+	public HBox getPlayField() {
+		return this.hBoxPlayField;
 	}
 
 }

@@ -35,14 +35,14 @@ public class PlayingStrategy implements GameScreenStrategy {
 
 	public void initialize() {
 		vBoxDice = new VBox(5);
+		vBoxDice.setAlignment(Pos.TOP_CENTER);
+		vBoxDice.setPadding(new Insets(15, 0, 0, 0));
 		hBoxThrownDice = new HBox(5);
 		hBoxPickedDice = new HBox(5);
 		hBoxCategory = new HBox(5);
 		hBoxThrownDice.getStyleClass().add("dice-images");
 		hBoxPickedDice.getStyleClass().add("dice-images");
 		hBoxCategory.getStyleClass().add("dice-images");
-		vBoxDice.setAlignment(Pos.TOP_CENTER);
-		vBoxDice.setPadding(new Insets(15, 0, 0, 0));
 		vBoxDice.getChildren().addAll(hBoxThrownDice, hBoxPickedDice, hBoxCategory);
 	}
 
@@ -70,9 +70,12 @@ public class PlayingStrategy implements GameScreenStrategy {
 		vBoxDice.getChildren().add(0, rollDiceButton);
 		vBoxDice.getChildren().add(submitButton);
 	}
-	
-	public void setStrategyCenter(){
-		player.getGameScreen().setCenter(vBoxDice);
+
+	public void setStrategyCenter() {
+		if (player.getGameScreen().getPlayField().getChildren().isEmpty()) {
+			player.getGameScreen().getPlayField().getChildren().add(vBoxDice);
+		}
+		player.getGameScreen().getPlayField().getChildren().set(0, vBoxDice);
 	}
 
 	@Override
@@ -89,7 +92,7 @@ public class PlayingStrategy implements GameScreenStrategy {
 			}
 			if (player.getCategoryScore() != null) {
 				submitButton.setVisible(true);
-				pointsLabel.setText(player.getCategoryScore().getPoints() + " points");
+				pointsLabel.setText(player.getCategoryScore().calculatePoints() + " points");
 			}
 		}
 	}

@@ -7,6 +7,11 @@ import java.util.TreeSet;
 public class CategoryScore {
 	private ArrayList<Dice> pickedDice;
 	private Category category;
+	private int points;
+	
+	public CategoryScore(Category category) {
+		this.category = category;
+	} 
 
 	public CategoryScore(Category category, ArrayList<Dice> pickedDice) {
 		this.category = category;
@@ -15,9 +20,14 @@ public class CategoryScore {
 
 	public void setDice(ArrayList<Dice> pickedDice) {
 		this.pickedDice = pickedDice;
+		this.points = calculatePoints();
+	}
+	
+	public int getPoints(){
+		return this.points;
 	}
 
-	public int getPoints() {
+	public int calculatePoints() {
 		if (isLegitCategory()) {
 			switch (this.category) {
 			case ACES:

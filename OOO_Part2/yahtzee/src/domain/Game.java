@@ -77,13 +77,11 @@ public class Game extends Observable {
 	}
 
 	public void updateCurrentPlayer() {
-		System.out.println("Current player: " + currentPlayer.getUsername());
 		if (players.indexOf(currentPlayer) == players.size() - 1) {
 			setCurrentPlayer(players.get(0));
 		} else {
 			setCurrentPlayer(players.get(players.indexOf(currentPlayer) + 1));
 		}
-		System.out.println("New player: " + currentPlayer.getUsername() + "/n");
 		somethingChanged();
 	}
 

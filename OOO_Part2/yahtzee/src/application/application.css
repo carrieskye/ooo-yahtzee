@@ -35,3 +35,7 @@
  	-fx-padding: 10.0;
  }
  
+ .center{
+ 	-fx-alignment: center;
+ }
+ 

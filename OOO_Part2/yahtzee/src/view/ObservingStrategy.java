@@ -44,7 +44,10 @@ public class ObservingStrategy implements GameScreenStrategy {
 
 	@Override
 	public void setStrategyCenter() {
-		player.getGameScreen().setCenter(vBoxDice);
+		if (player.getGameScreen().getPlayField().getChildren().isEmpty()) {
+			player.getGameScreen().getPlayField().getChildren().add(vBoxDice);
+		}
+		player.getGameScreen().getPlayField().getChildren().set(0, vBoxDice);
 	}
 
 	@Override
@@ -63,7 +66,7 @@ public class ObservingStrategy implements GameScreenStrategy {
 			}
 			if (currentPlayer.getCategoryScore() != null) {
 				categoryLabel.setText(currentPlayer.getCategoryScore().getCategory().toString() + ": "
-						+ currentPlayer.getCategoryScore().getPoints() + " points");
+						+ currentPlayer.getCategoryScore().calculatePoints() + " points");
 			}
 		}
 	}
