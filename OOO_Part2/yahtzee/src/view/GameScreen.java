@@ -1,14 +1,5 @@
 package view;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableModel;
-
-import domain.Category;
 import domain.CategoryScore;
 import domain.Player;
 import javafx.collections.FXCollections;
@@ -29,19 +20,9 @@ public class GameScreen extends BorderPane {
 	private HBox hBoxGame, hBoxPlayField, hBoxPlayer;
 	private VBox vBoxPoints;
 	private Label currentPlayerLabelBottom, gameLabel;
-	private TableView scoreTable;
-	List<Integer> scoreList = new ArrayList<Integer>();for(
-	int i = 0;i<13;i++)
-	{
-		if (null == player.getCategoryScoreList().get(i)) {
-			scoreList.add(i, 0);
-		} else {
-			scoreList.add(i, player.getCategoryScoreList().get(i).getPoints());
-		}
-
-	}
-	private final ObservableList<Player> score =
-            FXCollections.observableArrayList();
+	TableColumn<CategoryScore, String> categoryCol;
+	TableColumn<CategoryScore, Integer> scoreCol;
+	private TableView<CategoryScore> scoreTable;
 
 	public GameScreen(Player player, Player currentPlayer) {
 		this.player = player;
@@ -79,17 +60,8 @@ public class GameScreen extends BorderPane {
 		this.setBottom(hBoxPlayer);
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void makeRight() {
-
-		scoreTable = new TableView();
-		scoreTable.setEditable(true);
-		TableColumn categoryCol = new TableColumn("Category");
-		TableColumn scoreCol = new TableColumn("Score");
-		scoreTable.getColumns().addAll(categoryCol, scoreCol);
-		categoryCol.setCellValueFactory(new PropertyValueFactory<>("Category"));
-		scoreCol.setCellValueFactory(new PropertyValueFactory<>("Score"));
-		scoreTable.setItems(value);
+		createScoreTable();
 		this.setRight(scoreTable);
 	}
 
@@ -108,9 +80,27 @@ public class GameScreen extends BorderPane {
 		}
 	}
 
+	public void createScoreTable() {
+		scoreTable = new TableView<CategoryScore>();
+		scoreTable.setEditable(true);
+		categoryCol = new TableColumn<CategoryScore, String>("Category");
+		scoreCol = new TableColumn<CategoryScore, Integer>("Score");
+		scoreTable.getColumns().add(categoryCol);
+		scoreTable.getColumns().add(scoreCol);
+	}
+
+	public void updateScoreTable() {
+		categoryCol.setCellValueFactory(new PropertyValueFactory<>("Category"));
+		scoreCol.setCellValueFactory(new PropertyValueFactory<>("points"));
+		ObservableList<CategoryScore> categoryScoreList = FXCollections
+				.observableArrayList(player.getCategoryScoreList());
+		scoreTable.setItems(categoryScoreList);
+	}
+
 	public void update(Player currentPlayer) {
 		currentPlayerLabelBottom.setText(currentPlayer.getUsername() + " playing");
 		updateStrategy(currentPlayer);
+		updateScoreTable();
 		currentStrategy.setStrategyCenter();
 		currentStrategy.updateField(currentPlayer);
 	}

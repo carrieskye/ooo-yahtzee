@@ -8,10 +8,10 @@ public class CategoryScore {
 	private ArrayList<Dice> pickedDice;
 	private Category category;
 	private int points;
-	
+
 	public CategoryScore(Category category) {
 		this.category = category;
-	} 
+	}
 
 	public CategoryScore(Category category, ArrayList<Dice> pickedDice) {
 		this.category = category;
@@ -22,8 +22,8 @@ public class CategoryScore {
 		this.pickedDice = pickedDice;
 		this.points = calculatePoints();
 	}
-	
-	public int getPoints(){
+
+	public int getPoints() {
 		return this.points;
 	}
 
@@ -143,8 +143,8 @@ public class CategoryScore {
 		}
 		return straightLevel;
 	}
-	
-	public Category getCategory(){
+
+	public Category getCategory() {
 		return this.category;
 	}
 }
