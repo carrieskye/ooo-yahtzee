@@ -83,6 +83,7 @@ public class GameScreen extends BorderPane {
 	public void createScoreTable() {
 		scoreTable = new TableView<CategoryScore>();
 		scoreTable.setEditable(true);
+		scoreTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 		categoryCol = new TableColumn<CategoryScore, String>("Category");
 		scoreCol = new TableColumn<CategoryScore, Integer>("Score");
 		scoreTable.getColumns().add(categoryCol);
