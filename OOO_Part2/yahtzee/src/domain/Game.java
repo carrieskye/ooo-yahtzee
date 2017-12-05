@@ -1,7 +1,11 @@
 package domain;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Observable;
 import view.GameScreen;
 
@@ -94,9 +98,27 @@ public class Game extends Observable {
 			player.getGameScreen().start();
 		}
 	}
-	
-	public void gameIsOver(){
-		//TODO
+
+	public List<Player> getWinningPlayers() {
+		Map<Player, Integer> playerScores = new HashMap<Player, Integer>();
+		for (Player player : getPlayers()) {
+			playerScores.put(player, player.calculateTotalScore());
+		}
+		List<Player> winningPlayers = new ArrayList<Player>();
+
+		int highestScore = (Collections.max(playerScores.values()));
+		for (Entry<Player, Integer> playerScore : playerScores.entrySet()) {
+			if (playerScore.getValue() == highestScore) {
+				winningPlayers.add(playerScore.getKey());
+			}
+		}
+		return winningPlayers;
+	}
+
+	public void gameIsOver() {
+		// TODO
+		// Implement GameScreen.endGame()
+		somethingChanged();
 	}
 
 	public void somethingChanged() {

@@ -147,6 +147,14 @@ public class Player implements Observer {
 		return this.turn;
 	}
 
+	public int calculateTotalScore() {
+		int totalScore = 0;
+		for (CategoryScore categoryScore : getCategoryScoreList()) {
+			totalScore += categoryScore.getPoints();
+		}
+		return totalScore;
+	}
+
 	@Override
 	public void update(Observable o, Object arg) {
 		this.game = (Game) o;

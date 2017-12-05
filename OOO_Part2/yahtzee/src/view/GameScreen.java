@@ -102,6 +102,11 @@ public class GameScreen extends BorderPane {
 		currentStrategy.updateField(currentPlayer);
 	}
 
+	public void endGame() {
+		// TODO
+		// Use Game.getWinningPlayers() and Game.gameIsOver()
+	}
+
 	public HBox getPlayField() {
 		return this.hBoxPlayField;
 	}
