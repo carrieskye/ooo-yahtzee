@@ -5,8 +5,11 @@ import domain.CategoryScore;
 import domain.Player;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -21,6 +24,7 @@ public class GameScreen extends BorderPane {
 	private HBox hBoxGame, hBoxPlayField, hBoxPlayer;
 	private VBox vBoxPoints;
 	private Label currentPlayerLabelBottom, gameLabel;
+	private Button concedeButton;
 	TableColumn<CategoryScore, String> categoryCol;
 	TableColumn<CategoryScore, Integer> scoreCol;
 	private TableView<CategoryScore> scoreTable;
@@ -57,7 +61,13 @@ public class GameScreen extends BorderPane {
 		hBoxPlayer = new HBox(5);
 		currentPlayerLabelBottom = new Label(currentPlayer.getUsername() + " playing");
 		currentPlayerLabelBottom.getStyleClass().add("player-label");
-		hBoxPlayer.getChildren().add(currentPlayerLabelBottom);
+		concedeButton = new Button("Concede");
+		concedeButton.setOnAction(new concedeButtonHandler());
+		// TODO
+		// Make button show up on the screen. Button appears off-screen, if you increase
+		// window size he becomes visible. I don't know enough about HBoxes and such to
+		// get his working.
+		hBoxPlayer.getChildren().addAll(currentPlayerLabelBottom, concedeButton);
 		this.setBottom(hBoxPlayer);
 	}
 
@@ -121,6 +131,13 @@ public class GameScreen extends BorderPane {
 		updateScoreTable();
 		currentStrategy.setStrategyCenter();
 		currentStrategy.updateField(currentPlayer);
+	}
+
+	class concedeButtonHandler implements EventHandler<ActionEvent> {
+		@Override
+		public void handle(ActionEvent event) {
+			endGame();
+		}
 	}
 
 	public void endGame() {

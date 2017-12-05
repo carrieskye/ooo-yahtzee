@@ -14,7 +14,7 @@ public enum Dice {
 		this.number = number;
 		FileInputStream inputstream;
 		try {
-			inputstream = new FileInputStream("resources/dice/Dice-" + number + ".png");
+			inputstream = new FileInputStream("resources/dice/dice-" + number + ".png");
 			this.img = new Image(inputstream);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
