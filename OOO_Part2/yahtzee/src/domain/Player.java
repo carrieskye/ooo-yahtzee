@@ -12,7 +12,7 @@ public class Player implements Observer {
 	private GameScreen screen;
 	private ArrayList<ThrownDice> thrownDice;
 	private ArrayList<ThrownDice> pickedDice;
-	private ArrayList<CategoryScore> categoryScore;
+	private ArrayList<CategoryScore> categoryScores;
 	private CategoryScore currentCategory;
 	private int turn;
 
@@ -30,7 +30,7 @@ public class Player implements Observer {
 
 		thrownDice = new ArrayList<>();
 		pickedDice = new ArrayList<>();
-		categoryScore = new ArrayList<>();
+		categoryScores = new ArrayList<>();
 	}
 
 	public void throwDice() {
@@ -89,7 +89,7 @@ public class Player implements Observer {
 	}
 
 	public void endTurn() {
-		categoryScore.add(currentCategory);
+		categoryScores.add(currentCategory);
 		thrownDice.clear();
 		pickedDice.clear();
 		currentCategory = null;
@@ -140,7 +140,7 @@ public class Player implements Observer {
 	}
 
 	public ArrayList<CategoryScore> getCategoryScoreList() {
-		return this.categoryScore;
+		return this.categoryScores;
 	}
 
 	public int getTurn() {

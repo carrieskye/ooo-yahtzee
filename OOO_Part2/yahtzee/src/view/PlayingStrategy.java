@@ -2,6 +2,7 @@ package view;
 
 import java.util.ArrayList;
 import domain.Category;
+import domain.CategoryScore;
 import domain.Player;
 import domain.ThrownDice;
 import javafx.collections.FXCollections;
@@ -69,6 +70,7 @@ public class PlayingStrategy implements GameScreenStrategy {
 
 		vBoxDice.getChildren().add(0, rollDiceButton);
 		vBoxDice.getChildren().add(submitButton);
+
 	}
 
 	public void setStrategyCenter() {
@@ -85,6 +87,10 @@ public class PlayingStrategy implements GameScreenStrategy {
 			rollDiceButton.setVisible(false);
 		}
 		if (!player.getThrownDice().isEmpty()) {
+			for (CategoryScore categoryScore : player.getCategoryScoreList()) {
+				categoryBox.getItems().remove(categoryScore.getCategory().toString());
+			}
+			// categoryBox.setPromptText("Category");
 			categoryBox.setVisible(true);
 			loadDice(player.getThrownDice(), hBoxThrownDice, false);
 			if (!hBoxPickedDice.getChildren().isEmpty() || !player.getPickedDice().isEmpty()) {
@@ -158,7 +164,12 @@ public class PlayingStrategy implements GameScreenStrategy {
 	class CategoryHandler implements EventHandler<ActionEvent> {
 		@Override
 		public void handle(ActionEvent event) {
-			player.calculateCategoryScore(Category.valueOf(categoryBox.getValue()));
+			try {
+				player.calculateCategoryScore(Category.valueOf(categoryBox.getValue()));
+			} catch (NullPointerException e) {
+				categoryBox.getSelectionModel().selectFirst();
+				player.calculateCategoryScore(Category.valueOf(categoryBox.getValue()));
+			}
 		}
 	}
 
@@ -168,12 +179,13 @@ public class PlayingStrategy implements GameScreenStrategy {
 			rolls = 0;
 			hBoxPickedDice.getChildren().clear();
 			hBoxThrownDice.getChildren().clear();
-			categoryBox.setPromptText("Category");
+			// categoryBox.setPromptText("Category");
 			categoryBox.setVisible(false);
 			pointsLabel.setText("");
 			submitButton.setVisible(false);
 			rollDiceButton.setVisible(true);
 			player.endTurn();
+			categoryBox.getSelectionModel().selectFirst();
 		}
 	}
 

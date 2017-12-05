@@ -61,7 +61,13 @@ public class GameScreen extends BorderPane {
 	}
 
 	public void makeRight() {
-		createScoreTable();
+		scoreTable = new TableView<CategoryScore>();
+		scoreTable.setEditable(true);
+		scoreTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		categoryCol = new TableColumn<CategoryScore, String>("Category");
+		scoreCol = new TableColumn<CategoryScore, Integer>("Score");
+		scoreTable.getColumns().add(categoryCol);
+		scoreTable.getColumns().add(scoreCol);
 		this.setRight(scoreTable);
 	}
 
@@ -78,16 +84,6 @@ public class GameScreen extends BorderPane {
 		} else {
 			currentStrategy = observingStrategy;
 		}
-	}
-
-	public void createScoreTable() {
-		scoreTable = new TableView<CategoryScore>();
-		scoreTable.setEditable(true);
-		scoreTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-		categoryCol = new TableColumn<CategoryScore, String>("Category");
-		scoreCol = new TableColumn<CategoryScore, Integer>("Score");
-		scoreTable.getColumns().add(categoryCol);
-		scoreTable.getColumns().add(scoreCol);
 	}
 
 	public void updateScoreTable() {
