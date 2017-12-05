@@ -147,4 +147,14 @@ public class CategoryScore {
 	public Category getCategory() {
 		return this.category;
 	}
+
+	public static CategoryScore getEmptyCategoryScore(Category category) {
+		CategoryScore categoryScore = new CategoryScore(category);
+		categoryScore.setPoints(-1);
+		return categoryScore;
+	}
+
+	public void setPoints(int points) {
+		this.points = points;
+	}
 }
