@@ -17,8 +17,8 @@ public class Player implements Observer {
 	private int turn;
 
 	public Player(Game game, String username) throws DomainException {
-		game.addObserver(this);
 		setUsername(username);
+		game.addObserver(this);
 		this.game = game;
 		this.turn = 0;
 

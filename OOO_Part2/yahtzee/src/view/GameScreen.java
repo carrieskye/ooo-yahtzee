@@ -73,29 +73,21 @@ public class GameScreen extends BorderPane {
 
 	public void makeRight() {
 		scoreTable = new TableView<CategoryScore>();
-		scoreTable.setEditable(true);
 		scoreTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 		categoryCol = new TableColumn<CategoryScore, String>("Category");
 		scoreCol = new TableColumn<CategoryScore, Integer>("Score");
 		scoreTable.getColumns().add(categoryCol);
 		scoreTable.getColumns().add(scoreCol);
-		ObservableList<CategoryScore> emptyList = FXCollections.observableArrayList(
-				CategoryScore.getEmptyCategoryScore(Category.ACES), CategoryScore.getEmptyCategoryScore(Category.TWOS),
-				CategoryScore.getEmptyCategoryScore(Category.THREES),
-				CategoryScore.getEmptyCategoryScore(Category.FOURS),
-				CategoryScore.getEmptyCategoryScore(Category.FIVES),
-				CategoryScore.getEmptyCategoryScore(Category.SIXES),
-				CategoryScore.getEmptyCategoryScore(Category.THREE_OF_A_KIND),
-				CategoryScore.getEmptyCategoryScore(Category.FOUR_OF_A_KIND),
-				CategoryScore.getEmptyCategoryScore(Category.FULL_HOUSE),
-				CategoryScore.getEmptyCategoryScore(Category.SMALL_STRAIGHT),
-				CategoryScore.getEmptyCategoryScore(Category.LARGE_STRAIGHT),
-				CategoryScore.getEmptyCategoryScore(Category.YAHTZEE),
-				CategoryScore.getEmptyCategoryScore(Category.CHANCE));
+		ObservableList<CategoryScore> emptyCategoryScores = FXCollections.observableArrayList();
+		for (Category category : Category.values()) {
+			emptyCategoryScores.add(CategoryScore.getEmptyCategoryScore(category));
+		}
 		categoryCol.setCellValueFactory(new PropertyValueFactory<>("Category"));
 		scoreCol.setCellValueFactory(new PropertyValueFactory<>("points"));
-		scoreTable.setItems(emptyList);
-		this.setRight(scoreTable);
+		// TODO
+		// Somehow make the table display empty cells instead of -1s
+		scoreTable.setItems(emptyCategoryScores);
+		setRight(scoreTable);
 	}
 
 	public void start() {
@@ -119,6 +111,7 @@ public class GameScreen extends BorderPane {
 				for (CategoryScore categoryScore : scoreTable.getItems()) {
 					if (categoryScore.getCategory().equals(currentCategoryScore.getCategory())) {
 						scoreTable.getItems().set(scoreTable.getItems().indexOf(categoryScore), currentCategoryScore);
+
 					}
 				}
 			}

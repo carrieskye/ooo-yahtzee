@@ -105,7 +105,6 @@ public class Game extends Observable {
 			playerScores.put(player, player.calculateTotalScore());
 		}
 		List<Player> winningPlayers = new ArrayList<Player>();
-
 		int highestScore = (Collections.max(playerScores.values()));
 		for (Entry<Player, Integer> playerScore : playerScores.entrySet()) {
 			if (playerScore.getValue() == highestScore) {
