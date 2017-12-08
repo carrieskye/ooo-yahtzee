@@ -35,16 +35,6 @@
  	-fx-padding: 10.0;
  }
  
- .center{
- 	-fx-alignment: center;
- }
- 
- .playfield{
- 	-fx-alignment: center;
- 	-fx-padding: 10.0;
- 	-fx-pref-width: 800;
- }
- 
  .dicefield{
  	-fx-alignment: center;
  	-fx-padding: 10.0;
@@ -55,8 +45,4 @@
  	-fx-pref-width: 400;
  	-fx-padding: 20.0;
  }
- 
- .score-column {
- 	-fx-min-width: 10em;  
-}
  
