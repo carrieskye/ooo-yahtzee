@@ -36,6 +36,7 @@ public class PlayingStrategy implements GameScreenStrategy {
 
 	public void initialize() {
 		vBoxDice = new VBox(5);
+		vBoxDice.getStyleClass().add("dice-field");
 		vBoxDice.setAlignment(Pos.TOP_CENTER);
 		vBoxDice.setPadding(new Insets(15, 0, 0, 0));
 		hBoxThrownDice = new HBox(5);
@@ -74,10 +75,7 @@ public class PlayingStrategy implements GameScreenStrategy {
 	}
 
 	public void setStrategyCenter() {
-		if (player.getGameScreen().getPlayField().getChildren().isEmpty()) {
-			player.getGameScreen().getPlayField().getChildren().add(vBoxDice);
-		}
-		player.getGameScreen().getPlayField().getChildren().set(0, vBoxDice);
+		player.getGameScreen().setCenter(vBoxDice);
 	}
 
 	@Override

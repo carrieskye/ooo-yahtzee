@@ -52,10 +52,7 @@ public class ObservingStrategy implements GameScreenStrategy {
 
 	@Override
 	public void setStrategyCenter() {
-		if (player.getGameScreen().getPlayField().getChildren().isEmpty()) {
-			player.getGameScreen().getPlayField().getChildren().add(vBoxDice);
-		}
-		player.getGameScreen().getPlayField().getChildren().set(0, vBoxDice);
+		player.getGameScreen().setCenter(vBoxDice);
 	}
 
 	@Override

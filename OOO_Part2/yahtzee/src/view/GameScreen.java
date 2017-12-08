@@ -3,6 +3,7 @@ package view;
 import domain.Category;
 import domain.CategoryScore;
 import domain.Player;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -21,7 +22,7 @@ import javafx.scene.layout.VBox;
 public class GameScreen extends BorderPane {
 	private Player player;
 	private GameScreenStrategy currentStrategy, playingStrategy, observingStrategy;
-	private HBox hBoxGame, hBoxPlayField, hBoxPlayer;
+	private HBox hBoxGame, hBoxPlayer;
 	private VBox vBoxPoints;
 	private Label currentPlayerLabelBottom, gameLabel;
 	private Button surrenderButton;
@@ -50,12 +51,9 @@ public class GameScreen extends BorderPane {
 	}
 
 	public void makeCenter() {
-		hBoxPlayField = new HBox(5);
-		hBoxPlayField.getStyleClass().add("playfield");
 		vBoxPoints = new VBox(5);
 		vBoxPoints.setAlignment(Pos.TOP_CENTER);
 		vBoxPoints.setPadding(new Insets(15, 0, 0, 0));
-		this.setCenter(hBoxPlayField);
 	}
 
 	public void makeBottom(Player currentPlayer) {
@@ -73,9 +71,9 @@ public class GameScreen extends BorderPane {
 		scoreTable = new TableView<CategoryScore>();
 		scoreTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 		categoryCol = new TableColumn<CategoryScore, String>("Category");
+		categoryCol.setMinWidth(100);
 		scoreCol = new TableColumn<CategoryScore, Integer>("Score");
-		categoryCol.setMinWidth(125);
-		scoreCol.setMinWidth(25);
+		scoreCol.setStyle("-fx-alignment: center");
 		scoreTable.getColumns().add(categoryCol);
 		scoreTable.getColumns().add(scoreCol);
 		ObservableList<CategoryScore> emptyCategoryScores = FXCollections.observableArrayList();
@@ -85,6 +83,9 @@ public class GameScreen extends BorderPane {
 		categoryCol.setCellValueFactory(new PropertyValueFactory<>("Category"));
 		scoreCol.setCellValueFactory(new PropertyValueFactory<>("points"));
 		scoreTable.setItems(emptyCategoryScores);
+		scoreTable.setFixedCellSize(25);
+		scoreTable.prefHeightProperty()
+				.bind(Bindings.size(scoreTable.getItems()).multiply(scoreTable.getFixedCellSize()).add(30));
 		vBoxPoints.getChildren().add(scoreTable);
 	}
 
@@ -92,7 +93,8 @@ public class GameScreen extends BorderPane {
 		playingStrategy.makeCenter();
 		observingStrategy.makeCenter();
 		currentStrategy.setStrategyCenter();
-		hBoxPlayField.getChildren().addAll(vBoxPoints);
+		this.setRight(vBoxPoints);
+		player.getGameScreen().setMargin(vBoxPoints, new Insets(20));
 	}
 
 	public void updateStrategy(Player currentPlayer) {
@@ -123,17 +125,11 @@ public class GameScreen extends BorderPane {
 		currentStrategy.updateField(currentPlayer);
 	}
 
-
-
 	public void endGame() {
 		// TODO
 		// Use Game.getWinningPlayers() and Game.gameIsOver()
 	}
 
-	public HBox getPlayField() {
-		return this.hBoxPlayField;
-	}
-	
 	class SurrenderButtonHandler implements EventHandler<ActionEvent> {
 		@Override
 		public void handle(ActionEvent event) {
