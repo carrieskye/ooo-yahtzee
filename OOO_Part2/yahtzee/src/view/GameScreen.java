@@ -24,7 +24,7 @@ public class GameScreen extends BorderPane {
 	private HBox hBoxGame, hBoxPlayField, hBoxPlayer;
 	private VBox vBoxPoints;
 	private Label currentPlayerLabelBottom, gameLabel;
-	private Button concedeButton;
+	private Button surrenderButton;
 	TableColumn<CategoryScore, String> categoryCol;
 	TableColumn<CategoryScore, Integer> scoreCol;
 	private TableView<CategoryScore> scoreTable;
@@ -42,6 +42,7 @@ public class GameScreen extends BorderPane {
 
 	public void makeTop() {
 		hBoxGame = new HBox(5);
+		hBoxGame.getStyleClass().add("top-bottom-hbox");
 		gameLabel = new Label("Yahtzee");
 		gameLabel.getStyleClass().add("game-label");
 		hBoxGame.getChildren().add(gameLabel);
@@ -50,7 +51,7 @@ public class GameScreen extends BorderPane {
 
 	public void makeCenter() {
 		hBoxPlayField = new HBox(5);
-		hBoxPlayField.getStyleClass().add("center");
+		hBoxPlayField.getStyleClass().add("playfield");
 		vBoxPoints = new VBox(5);
 		vBoxPoints.setAlignment(Pos.TOP_CENTER);
 		vBoxPoints.setPadding(new Insets(15, 0, 0, 0));
@@ -58,16 +59,13 @@ public class GameScreen extends BorderPane {
 	}
 
 	public void makeBottom(Player currentPlayer) {
-		hBoxPlayer = new HBox(5);
+		hBoxPlayer = new HBox(20);
+		hBoxPlayer.getStyleClass().add("top-bottom-hbox");
 		currentPlayerLabelBottom = new Label(currentPlayer.getUsername() + " playing");
 		currentPlayerLabelBottom.getStyleClass().add("player-label");
-		concedeButton = new Button("Concede");
-		concedeButton.setOnAction(new concedeButtonHandler());
-		// TODO
-		// Make button show up on the screen. Button appears off-screen, if you increase
-		// window size he becomes visible. I don't know enough about HBoxes and such to
-		// get his working.
-		hBoxPlayer.getChildren().addAll(currentPlayerLabelBottom, concedeButton);
+		surrenderButton = new Button("Surrender");
+		surrenderButton.setOnAction(new SurrenderButtonHandler());
+		hBoxPlayer.getChildren().addAll(currentPlayerLabelBottom, surrenderButton);
 		this.setBottom(hBoxPlayer);
 	}
 
@@ -76,6 +74,8 @@ public class GameScreen extends BorderPane {
 		scoreTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 		categoryCol = new TableColumn<CategoryScore, String>("Category");
 		scoreCol = new TableColumn<CategoryScore, Integer>("Score");
+		categoryCol.setMinWidth(125);
+		scoreCol.setMinWidth(25);
 		scoreTable.getColumns().add(categoryCol);
 		scoreTable.getColumns().add(scoreCol);
 		ObservableList<CategoryScore> emptyCategoryScores = FXCollections.observableArrayList();
@@ -84,17 +84,15 @@ public class GameScreen extends BorderPane {
 		}
 		categoryCol.setCellValueFactory(new PropertyValueFactory<>("Category"));
 		scoreCol.setCellValueFactory(new PropertyValueFactory<>("points"));
-		// TODO
-		// Somehow make the table display empty cells instead of -1s
 		scoreTable.setItems(emptyCategoryScores);
-		setRight(scoreTable);
+		vBoxPoints.getChildren().add(scoreTable);
 	}
 
 	public void start() {
 		playingStrategy.makeCenter();
 		observingStrategy.makeCenter();
 		currentStrategy.setStrategyCenter();
-		hBoxPlayField.getChildren().add(vBoxPoints);
+		hBoxPlayField.getChildren().addAll(vBoxPoints);
 	}
 
 	public void updateStrategy(Player currentPlayer) {
@@ -111,7 +109,6 @@ public class GameScreen extends BorderPane {
 				for (CategoryScore categoryScore : scoreTable.getItems()) {
 					if (categoryScore.getCategory().equals(currentCategoryScore.getCategory())) {
 						scoreTable.getItems().set(scoreTable.getItems().indexOf(categoryScore), currentCategoryScore);
-
 					}
 				}
 			}
@@ -126,12 +123,7 @@ public class GameScreen extends BorderPane {
 		currentStrategy.updateField(currentPlayer);
 	}
 
-	class concedeButtonHandler implements EventHandler<ActionEvent> {
-		@Override
-		public void handle(ActionEvent event) {
-			endGame();
-		}
-	}
+
 
 	public void endGame() {
 		// TODO
@@ -140,6 +132,13 @@ public class GameScreen extends BorderPane {
 
 	public HBox getPlayField() {
 		return this.hBoxPlayField;
+	}
+	
+	class SurrenderButtonHandler implements EventHandler<ActionEvent> {
+		@Override
+		public void handle(ActionEvent event) {
+			endGame();
+		}
 	}
 
 }

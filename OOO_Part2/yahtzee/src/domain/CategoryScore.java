@@ -150,10 +150,10 @@ public class CategoryScore {
 
 	public static CategoryScore getEmptyCategoryScore(Category category) {
 		CategoryScore categoryScore = new CategoryScore(category);
-		categoryScore.setPoints(-1);
+		categoryScore.setPoints(0);
 		return categoryScore;
 	}
-
+	
 	public void setPoints(int points) {
 		this.points = points;
 	}

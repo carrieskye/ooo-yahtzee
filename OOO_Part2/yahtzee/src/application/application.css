@@ -1,19 +1,13 @@
 /* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
  .game-label{
- 	-fx-background-color: #FFFFFF;
  	-fx-font: 25.0px Tahoma;
  	-fx-font-weight: bold;
  	-fx-alignment: center;
- 	-fx-min-height: 50.0;
- 	-fx-min-width: 900.0;
  }
  
  .player-label{
- 	-fx-background-color: #FFFFFF;
  	-fx-font: 20.0px Tahoma;
  	-fx-alignment: center;
- 	-fx-min-height: 50.0;
- 	-fx-min-width: 900.0;
  }
  
  .observe-label{
@@ -30,6 +24,12 @@
     -fx-border-insets: 0.0;
  }
  
+ .top-bottom-hbox{
+ 	-fx-background-color: #FFFFFF;
+ 	-fx-alignment: center; 	    
+ 	-fx-padding: 10;
+ }
+ 
  .dice-images{
  	-fx-alignment: center;
  	-fx-padding: 10.0;
@@ -37,5 +37,10 @@
  
  .center{
  	-fx-alignment: center;
+ }
+ 
+ .playfield{
+ 	-fx-alignment: center;
+ 	-fx-padding: 10.0;
  }
  
