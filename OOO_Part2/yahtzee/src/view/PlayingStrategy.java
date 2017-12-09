@@ -2,6 +2,8 @@ package view;
 
 import java.util.ArrayList;
 import domain.Category;
+import domain.Category.LowerSectionCategory;
+import domain.Category.UpperSectionCategory;
 import domain.CategoryScore;
 import domain.Player;
 import domain.ThrownDice;
@@ -24,14 +26,16 @@ public class PlayingStrategy implements GameScreenStrategy {
 	private HBox hBoxThrownDice, hBoxPickedDice, hBoxCategory;
 	private Button rollDiceButton, submitButton;
 	private Player player;
-	private ComboBox<String> categoryBox;
+	private ComboBox<Category> categoryBox;
 	private Label pointsLabel;
-	private int rolls;
+	private int action;
+	private ObservableList<Category> options;
+	private Category selectedCategory;
 
 	public PlayingStrategy(Player player) {
 		this.player = player;
 		initialize();
-		rolls = 0;
+		action = 0;
 	}
 
 	public void initialize() {
@@ -54,10 +58,21 @@ public class PlayingStrategy implements GameScreenStrategy {
 		rollDiceButton.setOnAction(new RollDiceHandler());
 		rollDiceButton.setAlignment(Pos.CENTER);
 
-		ObservableList<String> options = FXCollections.observableArrayList("ACES", "TWOS", "THREES", "FOURS", "FIVES",
-				"SIXES", "THREE_OF_A_KIND", "FOUR_OF_A_KIND", "FULL_HOUSE", "SMALL_STRAIGHT", "LARGE_STRAIGHT",
-				"YAHTZEE", "CHANCE");
-		categoryBox = new ComboBox<String>(options);
+		// options = FXCollections.observableArrayList("Aces", "Twos", "Threes",
+		// "Fours", "Fives", "Sixes",
+		// "Three of a kind", "Four of a kind", "Full house", "Small straight",
+		// "Large straight", "Yahtzee",
+		// "Chance");
+		// categoryBox = new ComboBox<String>(options);
+		categoryBox = new ComboBox<Category>();
+		options = FXCollections.observableArrayList();
+		for (UpperSectionCategory category : UpperSectionCategory.values()) {
+			options.add(category);
+		}
+		for (LowerSectionCategory category : LowerSectionCategory.values()) {
+			options.add(category);
+		}
+		categoryBox.getItems().addAll(options);
 		categoryBox.setOnAction(new CategoryHandler());
 		categoryBox.setVisible(false);
 		categoryBox.setPromptText("Category");
@@ -81,24 +96,41 @@ public class PlayingStrategy implements GameScreenStrategy {
 	@Override
 	public void updateField(Player player) {
 		this.player = player;
-		if (rolls >= 3) {
-			rollDiceButton.setVisible(false);
-		}
-		if (!player.getThrownDice().isEmpty()) {
-			for (CategoryScore categoryScore : player.getCategoryScoreList()) {
-				categoryBox.getItems().remove(categoryScore.getCategory().toString());
-			}
-			// categoryBox.setPromptText("Category");
+		switch (action) {
+		case 0:
+			rollDiceButton.setVisible(true);
+			break;
+		case 1:
+		case 2:
+		case 3:
 			categoryBox.setVisible(true);
 			loadDice(player.getThrownDice(), hBoxThrownDice, false);
 			if (!hBoxPickedDice.getChildren().isEmpty() || !player.getPickedDice().isEmpty()) {
 				loadDice(player.getPickedDice(), hBoxPickedDice, true);
 			}
-			if (player.getCategoryScore() != null) {
+			if (selectedCategory != null) {
 				submitButton.setVisible(true);
 				pointsLabel.setText(player.getCategoryScore().calculatePoints() + " points");
 			}
+			else{
+				categoryBox.setPromptText("Category");
+			}
+			if (action == 3)
+				rollDiceButton.setVisible(false);
+			break;
+		case 4:
+			action = 0;
+			hBoxPickedDice.getChildren().clear();
+			hBoxThrownDice.getChildren().clear();
+			submitButton.setVisible(false);
+			pointsLabel.setText("");
+			categoryBox.setVisible(false);
+			categoryBox.setPromptText("Category");
+			categoryBox.getItems().remove(categoryBox.getItems().indexOf(selectedCategory));
+			selectedCategory = null;
+			break;
 		}
+
 	}
 
 	public void loadDice(ArrayList<ThrownDice> diceList, HBox hbox, Boolean picked) {
@@ -112,23 +144,27 @@ public class PlayingStrategy implements GameScreenStrategy {
 			Button button = new Button(null, imageView);
 			button.getStyleClass().add("dice-button");
 			if (!picked) {
-				if (rolls < 3) {
+				if (action < 3) {
 					button.setOnAction(new SetAsideHandler());
 				}
 				if (dice.isPicked()) {
 					button.setVisible(false);
 				}
-			} else if (rolls < 3) {
+			} else if (action < 3) {
 				button.setOnAction(new ReturnHandler());
 			}
 			hbox.getChildren().add(button);
 		}
 	}
 
+	public String toEnumString(String original) {
+		return original.toUpperCase().replaceAll(" ", "_");
+	}
+
 	class RollDiceHandler implements EventHandler<ActionEvent> {
 		@Override
 		public void handle(ActionEvent event) {
-			rolls += 1;
+			action += 1;
 			player.throwDice();
 		}
 	}
@@ -162,28 +198,38 @@ public class PlayingStrategy implements GameScreenStrategy {
 	class CategoryHandler implements EventHandler<ActionEvent> {
 		@Override
 		public void handle(ActionEvent event) {
+			selectedCategory = categoryBox.getValue();
 			try {
-				player.calculateCategoryScore(Category.valueOf(categoryBox.getValue()));
+				player.calculateCategoryScore(categoryBox.getValue());
+			} catch (IllegalArgumentException e) {
+				player.calculateCategoryScore(categoryBox.getValue());
 			} catch (NullPointerException e) {
 				categoryBox.getSelectionModel().selectFirst();
-				player.calculateCategoryScore(Category.valueOf(categoryBox.getValue()));
+				try {
+					player.calculateCategoryScore(categoryBox.getValue());
+				} catch (IllegalArgumentException e2) {
+					player.calculateCategoryScore(categoryBox.getValue());
+				}
 			}
 		}
+
 	}
 
 	class SubmitHandler implements EventHandler<ActionEvent> {
 		@Override
 		public void handle(ActionEvent event) {
-			rolls = 0;
-			hBoxPickedDice.getChildren().clear();
-			hBoxThrownDice.getChildren().clear();
-			// categoryBox.setPromptText("Category");
-			categoryBox.setVisible(false);
-			pointsLabel.setText("");
-			submitButton.setVisible(false);
-			rollDiceButton.setVisible(true);
-			player.endTurn();
+			try {
+				if (categoryBox.getValue().equals(LowerSectionCategory.YAHTZEE)) {
+					categoryBox.getItems().add(LowerSectionCategory.BONUS_YAHTZEE);
+				}
+			} catch (IllegalArgumentException e) {
+			}
+			action = 4;
+			// categoryBox.getSelectionModel().clearSelection();
+			// categoryBox.setValue(null);
+			// categoryBox.setVisible(false);
 			categoryBox.getSelectionModel().selectFirst();
+			player.endTurn();
 		}
 	}
 

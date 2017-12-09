@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import domain.Category.LowerSectionCategory;
+import domain.Category.SpecialCategory;
+import domain.Category.UpperSectionCategory;
+
 public class CategoryScore {
 	private ArrayList<Dice> pickedDice;
 	private Category category;
@@ -11,6 +15,7 @@ public class CategoryScore {
 
 	public CategoryScore(Category category) {
 		this.category = category;
+		this.points = 0;
 	}
 
 	public CategoryScore(Category category, ArrayList<Dice> pickedDice) {
@@ -29,35 +34,53 @@ public class CategoryScore {
 
 	public int calculatePoints() {
 		if (isLegitCategory()) {
-			switch (this.category) {
-			case ACES:
-				return getFrequencyOfValue(1);
-			case TWOS:
-				return getFrequencyOfValue(2) * 2;
-			case THREES:
-				return getFrequencyOfValue(3) * 3;
-			case FOURS:
-				return getFrequencyOfValue(4) * 4;
-			case FIVES:
-				return getFrequencyOfValue(5) * 5;
-			case SIXES:
-				return getFrequencyOfValue(6) * 6;
-			case THREE_OF_A_KIND:
-			case FOUR_OF_A_KIND:
-			case CHANCE:
-				return getSumOfDice();
-			case FULL_HOUSE:
-				return 25;
-			case SMALL_STRAIGHT:
-				return 30;
-			case LARGE_STRAIGHT:
-				return 40;
-			case YAHTZEE:
-				return 50;
+			if (this.category instanceof UpperSectionCategory) {
+				return upperSectionPoints();
+			} else if (this.category instanceof LowerSectionCategory) {
+				return lowerSectionPoints();
 			}
 		}
 		return 0;
+	}
 
+	public int upperSectionPoints() {
+		UpperSectionCategory upperSectionCategory = (UpperSectionCategory) this.category;
+		switch (upperSectionCategory) {
+		case ACES:
+			return getFrequencyOfValue(1);
+		case TWOS:
+			return getFrequencyOfValue(2) * 2;
+		case THREES:
+			return getFrequencyOfValue(3) * 3;
+		case FOURS:
+			return getFrequencyOfValue(4) * 4;
+		case FIVES:
+			return getFrequencyOfValue(5) * 5;
+		case SIXES:
+			return getFrequencyOfValue(6) * 6;
+		}
+		return 0;
+	}
+
+	public int lowerSectionPoints() {
+		LowerSectionCategory lowerSectionCategory = (LowerSectionCategory) this.category;
+		switch (lowerSectionCategory) {
+		case THREE_OF_A_KIND:
+		case FOUR_OF_A_KIND:
+		case CHANCE:
+			return getSumOfDice();
+		case FULL_HOUSE:
+			return 25;
+		case SMALL_STRAIGHT:
+			return 30;
+		case LARGE_STRAIGHT:
+			return 40;
+		case YAHTZEE:
+			return 50;
+		case BONUS_YAHTZEE:
+			return 100;
+		}
+		return 0;
 	}
 
 	public int getFrequencyOfValue(int value) {
@@ -79,27 +102,31 @@ public class CategoryScore {
 	}
 
 	public boolean isLegitCategory() {
-		switch (this.category) {
-		case ACES:
-		case TWOS:
-		case THREES:
-		case FOURS:
-		case FIVES:
-		case SIXES:
-		case CHANCE:
+		if (this.category instanceof UpperSectionCategory || this.category instanceof SpecialCategory) {
 			return true;
-		case THREE_OF_A_KIND:
-			return correctFrequencyOfDice(3) ? true : false;
-		case FOUR_OF_A_KIND:
-			return correctFrequencyOfDice(4) ? true : false;
-		case FULL_HOUSE:
-			return fullHouse();
-		case SMALL_STRAIGHT:
-			return straight() == 4 ? true : false;
-		case LARGE_STRAIGHT:
-			return straight() == 5 ? true : false;
-		case YAHTZEE:
-			return correctFrequencyOfDice(5) ? true : false;
+		} else if (this.category instanceof LowerSectionCategory) {
+			LowerSectionCategory lowerSectionCategory = (LowerSectionCategory) this.category;
+			switch (lowerSectionCategory) {
+			case THREE_OF_A_KIND:
+				return correctFrequencyOfDice(3) ? true : false;
+			case FOUR_OF_A_KIND:
+				return correctFrequencyOfDice(4) ? true : false;
+			case FULL_HOUSE:
+				return fullHouse();
+			case SMALL_STRAIGHT:
+				return straight() == 4 ? true : false;
+			case LARGE_STRAIGHT:
+				return straight() == 5 ? true : false;
+			case YAHTZEE:
+				return correctFrequencyOfDice(5) ? true : false;
+			case CHANCE:
+				return true;
+			case BONUS_YAHTZEE:
+				// TODO;
+			default:
+				break;
+			}
+			return false;
 		}
 		return false;
 	}
@@ -153,8 +180,24 @@ public class CategoryScore {
 		categoryScore.setPoints(0);
 		return categoryScore;
 	}
-	
-	public void setPoints(int points) {
+
+	private void setPoints(int points) {
 		this.points = points;
+	}
+
+	public CategoryScore updateTotals(CategoryScore categoryScore) {
+		categoryScore.setPoints(categoryScore.getPoints() + this.points);
+
+		return categoryScore;
+	}
+
+	public CategoryScore addBonus(CategoryScore categoryScore) {
+		if (categoryScore.getCategory().equals(SpecialCategory.UPPER_SECTION_BONUS)) {
+			categoryScore.setPoints(35);
+		} else if (categoryScore.getCategory().equals(SpecialCategory.UPPER_SECTION_TOTAL)) {
+			categoryScore.setPoints(getPoints() + 35);
+		}
+		return categoryScore;
+
 	}
 }

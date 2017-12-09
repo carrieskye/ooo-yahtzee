@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Random;
+
+import domain.Category.LowerSectionCategory;
+import domain.Category.SpecialCategory;
+import domain.Category.UpperSectionCategory;
 import view.GameScreen;
 
 public class Player implements Observer {
@@ -13,7 +17,7 @@ public class Player implements Observer {
 	private ArrayList<ThrownDice> thrownDice;
 	private ArrayList<ThrownDice> pickedDice;
 	private ArrayList<CategoryScore> categoryScores;
-	private CategoryScore currentCategory;
+	private CategoryScore currentCategory, upperSectionScore, upperSectionBonus, upperSectionTotal,lowerSectionTotal, grandTotal;
 	private int turn;
 
 	public Player(Game game, String username) throws DomainException {
@@ -31,6 +35,12 @@ public class Player implements Observer {
 		thrownDice = new ArrayList<>();
 		pickedDice = new ArrayList<>();
 		categoryScores = new ArrayList<>();
+		
+		upperSectionScore = new CategoryScore(SpecialCategory.UPPER_SECTION_SCORE);
+		upperSectionBonus = new CategoryScore(SpecialCategory.UPPER_SECTION_BONUS);
+		upperSectionTotal = new CategoryScore(SpecialCategory.UPPER_SECTION_TOTAL);
+		lowerSectionTotal = new CategoryScore(SpecialCategory.LOWER_SECTION_TOTAL);
+		grandTotal = new CategoryScore(SpecialCategory.GRAND_TOTAL);
 	}
 
 	public void throwDice() {
@@ -42,7 +52,7 @@ public class Player implements Observer {
 			for (ThrownDice dice : thrownDice) {
 				if (!dice.isPicked()) {
 					thrownDice.set(thrownDice.indexOf(dice), getRandomDice());
-					if (currentCategory != null) {
+					if (currentCategory != null && !currentCategory.equals(null)) {
 						calculateCategoryScore(currentCategory.getCategory());
 					}
 				}
@@ -90,6 +100,7 @@ public class Player implements Observer {
 
 	public void endTurn() {
 		categoryScores.add(currentCategory);
+		updateTotals();
 		thrownDice.clear();
 		pickedDice.clear();
 		currentCategory = null;
@@ -110,6 +121,21 @@ public class Player implements Observer {
 		}
 		this.currentCategory = new CategoryScore(category, categoryDice);
 		game.showDice();
+	}
+	
+	public void updateTotals(){
+		if (currentCategory.getCategory() instanceof UpperSectionCategory){
+			currentCategory.updateTotals(upperSectionScore);
+			currentCategory.updateTotals(upperSectionTotal);
+			if (upperSectionScore.getPoints() >= 63 && upperSectionBonus.getPoints() == 0){
+				currentCategory.addBonus(upperSectionBonus);
+				currentCategory.addBonus(upperSectionTotal);
+			}
+		}
+		else if(currentCategory.getCategory() instanceof LowerSectionCategory){
+			currentCategory.updateTotals(lowerSectionTotal);
+		}
+		currentCategory.updateTotals(grandTotal);
 	}
 
 	private void setUsername(String username) throws DomainException {
@@ -141,6 +167,16 @@ public class Player implements Observer {
 
 	public ArrayList<CategoryScore> getCategoryScoreList() {
 		return this.categoryScores;
+	}
+	
+	public ArrayList<CategoryScore> getTotalScoresList(){
+		ArrayList<CategoryScore> totalScores = new ArrayList<>();
+		totalScores.add(upperSectionScore);
+		totalScores.add(upperSectionBonus);
+		totalScores.add(upperSectionTotal);
+		totalScores.add(lowerSectionTotal);
+		totalScores.add(grandTotal);
+		return totalScores;
 	}
 
 	public int getTurn() {

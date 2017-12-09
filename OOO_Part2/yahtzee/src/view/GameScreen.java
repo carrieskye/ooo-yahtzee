@@ -1,6 +1,9 @@
 package view;
 
 import domain.Category;
+import domain.Category.LowerSectionCategory;
+import domain.Category.SpecialCategory;
+import domain.Category.UpperSectionCategory;
 import domain.CategoryScore;
 import domain.Player;
 import javafx.beans.binding.Bindings;
@@ -76,10 +79,7 @@ public class GameScreen extends BorderPane {
 		scoreCol.setStyle("-fx-alignment: center");
 		scoreTable.getColumns().add(categoryCol);
 		scoreTable.getColumns().add(scoreCol);
-		ObservableList<CategoryScore> emptyCategoryScores = FXCollections.observableArrayList();
-		for (Category category : Category.values()) {
-			emptyCategoryScores.add(CategoryScore.getEmptyCategoryScore(category));
-		}
+		ObservableList<CategoryScore> emptyCategoryScores = makeCategories();
 		categoryCol.setCellValueFactory(new PropertyValueFactory<>("Category"));
 		scoreCol.setCellValueFactory(new PropertyValueFactory<>("points"));
 		scoreTable.setItems(emptyCategoryScores);
@@ -87,6 +87,23 @@ public class GameScreen extends BorderPane {
 		scoreTable.prefHeightProperty()
 				.bind(Bindings.size(scoreTable.getItems()).multiply(scoreTable.getFixedCellSize()).add(30));
 		vBoxPoints.getChildren().add(scoreTable);
+	}
+
+	public ObservableList<CategoryScore> makeCategories() {
+		ObservableList<CategoryScore> emptyCategoryScores = FXCollections.observableArrayList();
+		for (Category category : UpperSectionCategory.values()) {
+			emptyCategoryScores.add(CategoryScore.getEmptyCategoryScore(category));
+		}
+		emptyCategoryScores.add(CategoryScore.getEmptyCategoryScore(SpecialCategory.UPPER_SECTION_SCORE));
+		emptyCategoryScores.add(CategoryScore.getEmptyCategoryScore(SpecialCategory.UPPER_SECTION_BONUS));
+		emptyCategoryScores.add(CategoryScore.getEmptyCategoryScore(SpecialCategory.UPPER_SECTION_TOTAL));
+		for (Category category : LowerSectionCategory.values()) {
+			emptyCategoryScores.add(CategoryScore.getEmptyCategoryScore(category));
+		}
+		emptyCategoryScores.add(CategoryScore.getEmptyCategoryScore(SpecialCategory.LOWER_SECTION_TOTAL));
+		emptyCategoryScores.add(CategoryScore.getEmptyCategoryScore(SpecialCategory.UPPER_SECTION_TOTAL));
+		emptyCategoryScores.add(CategoryScore.getEmptyCategoryScore(SpecialCategory.GRAND_TOTAL));
+		return emptyCategoryScores;
 	}
 
 	public void start() {
@@ -114,6 +131,16 @@ public class GameScreen extends BorderPane {
 					}
 				}
 			}
+		}
+		for (CategoryScore totalScore : player.getTotalScoresList()) {
+			if (totalScore != null) {
+				for (CategoryScore categoryScore : scoreTable.getItems()) {
+					if (categoryScore.getCategory().equals(totalScore.getCategory())) {
+						scoreTable.getItems().set(scoreTable.getItems().indexOf(categoryScore), totalScore);
+					}
+				}
+			}
+
 		}
 	}
 

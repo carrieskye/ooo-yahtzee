@@ -88,7 +88,7 @@ public class StartScreen extends BorderPane {
 
 	private void startPlayerScreen(Player player) {
 		Stage stage = new Stage();
-		Scene scene = new Scene(player.getGameScreen(), 900, 600);
+		Scene scene = new Scene(player.getGameScreen(), 1200, 800);
 		scene.getStylesheets().addAll(primaryStage.getScene().getStylesheets());
 		stage.setTitle("Screen of " + player.getUsername());
 		stage.setScene(scene);
