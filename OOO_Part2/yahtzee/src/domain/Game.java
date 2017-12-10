@@ -73,7 +73,7 @@ public class Game extends Observable {
 	}
 
 	private void setCurrentPlayer(Player currentPlayer) {
-		if (currentPlayer.getTurn() >= MAX_TURN) {
+		if (currentPlayer.isGameOver()) {
 			gameIsOver();
 		} else {
 			this.currentPlayer = currentPlayer;
@@ -115,8 +115,9 @@ public class Game extends Observable {
 	}
 
 	public void gameIsOver() {
-		// TODO
-		// Implement GameScreen.endGame()
+		for (Player player : players) {
+			player.getGameScreen().endGame();
+		}
 		somethingChanged();
 	}
 

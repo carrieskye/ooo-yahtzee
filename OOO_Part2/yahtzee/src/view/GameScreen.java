@@ -21,6 +21,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
 public class GameScreen extends BorderPane {
 	private Player player;
@@ -153,8 +154,7 @@ public class GameScreen extends BorderPane {
 	}
 
 	public void endGame() {
-		// TODO
-		// Use Game.getWinningPlayers() and Game.gameIsOver()
+		//TODO
 	}
 
 	class SurrenderButtonHandler implements EventHandler<ActionEvent> {

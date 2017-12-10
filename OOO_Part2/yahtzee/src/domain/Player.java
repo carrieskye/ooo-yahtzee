@@ -19,15 +19,15 @@ public class Player implements Observer {
 	private ArrayList<CategoryScore> categoryScores;
 	private CategoryScore currentCategory, upperSectionScore, upperSectionBonus, upperSectionTotal, lowerSectionTotal,
 			grandTotal;
-	private int turn;
 	private int yahtzeeBonus;
+	private boolean gameOver;
 
 	public Player(Game game, String username) throws DomainException {
 		setUsername(username);
 		game.addObserver(this);
 		this.game = game;
-		this.turn = 0;
 		this.yahtzeeBonus = 0;
+		this.gameOver = false;
 
 		if (game.getCurrentPlayer() == null) {
 			screen = new GameScreen(this, this);
@@ -120,9 +120,9 @@ public class Player implements Observer {
 		thrownDice.clear();
 		pickedDice.clear();
 		currentCategory = null;
-		turn += 1;
 		game.showDice();
 		game.updateCurrentPlayer();
+		checkGameOver();
 	}
 
 	public void calculateCategoryScore(Category category) {
@@ -194,9 +194,20 @@ public class Player implements Observer {
 		totalScores.add(grandTotal);
 		return totalScores;
 	}
-
-	public int getTurn() {
-		return this.turn;
+	
+	public void checkGameOver(){
+		boolean gameOver = true;
+		for (UpperSectionCategory category : UpperSectionCategory.values()) {
+			if (!categoryScores.contains(category)){
+				gameOver = false;
+			}
+		}
+		for (LowerSectionCategory category : LowerSectionCategory.values()) {
+			if (!categoryScores.contains(category) && !category.equals(LowerSectionCategory.BONUS_YAHTZEE)){
+				gameOver = false;
+			}
+		}
+		this.gameOver = gameOver;
 	}
 
 	public int calculateTotalScore() {
@@ -205,6 +216,10 @@ public class Player implements Observer {
 			totalScore += categoryScore.getPoints();
 		}
 		return totalScore;
+	}
+	
+	public boolean isGameOver(){
+		return this.gameOver;
 	}
 
 	@Override
