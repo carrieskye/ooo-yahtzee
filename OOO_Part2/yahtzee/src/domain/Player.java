@@ -17,14 +17,17 @@ public class Player implements Observer {
 	private ArrayList<ThrownDice> thrownDice;
 	private ArrayList<ThrownDice> pickedDice;
 	private ArrayList<CategoryScore> categoryScores;
-	private CategoryScore currentCategory, upperSectionScore, upperSectionBonus, upperSectionTotal,lowerSectionTotal, grandTotal;
+	private CategoryScore currentCategory, upperSectionScore, upperSectionBonus, upperSectionTotal, lowerSectionTotal,
+			grandTotal;
 	private int turn;
+	private int yahtzeeBonus;
 
 	public Player(Game game, String username) throws DomainException {
 		setUsername(username);
 		game.addObserver(this);
 		this.game = game;
 		this.turn = 0;
+		this.yahtzeeBonus = 0;
 
 		if (game.getCurrentPlayer() == null) {
 			screen = new GameScreen(this, this);
@@ -35,7 +38,7 @@ public class Player implements Observer {
 		thrownDice = new ArrayList<>();
 		pickedDice = new ArrayList<>();
 		categoryScores = new ArrayList<>();
-		
+
 		upperSectionScore = new CategoryScore(SpecialCategory.UPPER_SECTION_SCORE);
 		upperSectionBonus = new CategoryScore(SpecialCategory.UPPER_SECTION_BONUS);
 		upperSectionTotal = new CategoryScore(SpecialCategory.UPPER_SECTION_TOTAL);
@@ -99,7 +102,20 @@ public class Player implements Observer {
 	}
 
 	public void endTurn() {
-		categoryScores.add(currentCategory);
+		if (currentCategory.getCategory().equals(LowerSectionCategory.BONUS_YAHTZEE)) {
+			if (yahtzeeBonus >= 1) {
+				for (CategoryScore categoryScore : categoryScores) {
+					if (categoryScore.getCategory().equals(LowerSectionCategory.BONUS_YAHTZEE)) {
+						categoryScore.setYahtzeeBonus(yahtzeeBonus, currentCategory.getDice());
+					}
+				}
+			} else {
+				categoryScores.add(currentCategory);
+			}
+			yahtzeeBonus += 1;
+		} else {
+			categoryScores.add(currentCategory);
+		}
 		updateTotals();
 		thrownDice.clear();
 		pickedDice.clear();
@@ -119,20 +135,20 @@ public class Player implements Observer {
 				categoryDice.add(dice.getDice());
 			}
 		}
+
 		this.currentCategory = new CategoryScore(category, categoryDice);
 		game.showDice();
 	}
-	
-	public void updateTotals(){
-		if (currentCategory.getCategory() instanceof UpperSectionCategory){
+
+	public void updateTotals() {
+		if (currentCategory.getCategory() instanceof UpperSectionCategory) {
 			currentCategory.updateTotals(upperSectionScore);
 			currentCategory.updateTotals(upperSectionTotal);
-			if (upperSectionScore.getPoints() >= 63 && upperSectionBonus.getPoints() == 0){
+			if (upperSectionScore.getPoints() >= 63 && upperSectionBonus.getPoints() == 0) {
 				currentCategory.addBonus(upperSectionBonus);
 				currentCategory.addBonus(upperSectionTotal);
 			}
-		}
-		else if(currentCategory.getCategory() instanceof LowerSectionCategory){
+		} else if (currentCategory.getCategory() instanceof LowerSectionCategory) {
 			currentCategory.updateTotals(lowerSectionTotal);
 		}
 		currentCategory.updateTotals(grandTotal);
@@ -168,8 +184,8 @@ public class Player implements Observer {
 	public ArrayList<CategoryScore> getCategoryScoreList() {
 		return this.categoryScores;
 	}
-	
-	public ArrayList<CategoryScore> getTotalScoresList(){
+
+	public ArrayList<CategoryScore> getTotalScoresList() {
 		ArrayList<CategoryScore> totalScores = new ArrayList<>();
 		totalScores.add(upperSectionScore);
 		totalScores.add(upperSectionBonus);

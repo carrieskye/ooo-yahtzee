@@ -32,7 +32,7 @@ public class CategoryScore {
 		return this.points;
 	}
 
-	public int calculatePoints() {
+	private int calculatePoints() {
 		if (isLegitCategory()) {
 			if (this.category instanceof UpperSectionCategory) {
 				return upperSectionPoints();
@@ -78,7 +78,7 @@ public class CategoryScore {
 		case YAHTZEE:
 			return 50;
 		case BONUS_YAHTZEE:
-			return 100;
+			return this.points + 100;
 		}
 		return 0;
 	}
@@ -122,7 +122,7 @@ public class CategoryScore {
 			case CHANCE:
 				return true;
 			case BONUS_YAHTZEE:
-				// TODO;
+				return correctFrequencyOfDice(5) ? true : false;
 			default:
 				break;
 			}
@@ -185,9 +185,16 @@ public class CategoryScore {
 		this.points = points;
 	}
 
-	public CategoryScore updateTotals(CategoryScore categoryScore) {
-		categoryScore.setPoints(categoryScore.getPoints() + this.points);
+	public ArrayList<Dice> getDice() {
+		return this.pickedDice;
+	}
 
+	public CategoryScore updateTotals(CategoryScore categoryScore) {
+		if (!this.equals(LowerSectionCategory.BONUS_YAHTZEE)) {
+			categoryScore.setPoints(categoryScore.getPoints() + this.points);
+		} else {
+			categoryScore.setPoints(categoryScore.getPoints() + 100);
+		}
 		return categoryScore;
 	}
 
@@ -199,5 +206,10 @@ public class CategoryScore {
 		}
 		return categoryScore;
 
+	}
+
+	public void setYahtzeeBonus(int index, ArrayList<Dice> dice) {
+		setDice(dice);
+		setPoints((index + 1) * 100);
 	}
 }

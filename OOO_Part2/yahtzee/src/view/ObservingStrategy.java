@@ -71,7 +71,7 @@ public class ObservingStrategy implements GameScreenStrategy {
 			}
 			if (currentPlayer.getCategoryScore() != null) {
 				categoryLabel.setText(currentPlayer.getCategoryScore().getCategory().toString() + ": "
-						+ currentPlayer.getCategoryScore().calculatePoints() + " points");
+						+ currentPlayer.getCategoryScore().getPoints() + " points");
 			}
 		}
 	}

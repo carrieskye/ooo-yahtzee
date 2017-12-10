@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import domain.Category;
 import domain.Category.LowerSectionCategory;
 import domain.Category.UpperSectionCategory;
-import domain.CategoryScore;
 import domain.Player;
 import domain.ThrownDice;
 import javafx.collections.FXCollections;
@@ -58,19 +57,15 @@ public class PlayingStrategy implements GameScreenStrategy {
 		rollDiceButton.setOnAction(new RollDiceHandler());
 		rollDiceButton.setAlignment(Pos.CENTER);
 
-		// options = FXCollections.observableArrayList("Aces", "Twos", "Threes",
-		// "Fours", "Fives", "Sixes",
-		// "Three of a kind", "Four of a kind", "Full house", "Small straight",
-		// "Large straight", "Yahtzee",
-		// "Chance");
-		// categoryBox = new ComboBox<String>(options);
 		categoryBox = new ComboBox<Category>();
 		options = FXCollections.observableArrayList();
 		for (UpperSectionCategory category : UpperSectionCategory.values()) {
 			options.add(category);
 		}
 		for (LowerSectionCategory category : LowerSectionCategory.values()) {
-			options.add(category);
+			if (!category.equals(LowerSectionCategory.BONUS_YAHTZEE)) {
+				options.add(category);
+			}
 		}
 		categoryBox.getItems().addAll(options);
 		categoryBox.setOnAction(new CategoryHandler());
@@ -110,9 +105,8 @@ public class PlayingStrategy implements GameScreenStrategy {
 			}
 			if (selectedCategory != null) {
 				submitButton.setVisible(true);
-				pointsLabel.setText(player.getCategoryScore().calculatePoints() + " points");
-			}
-			else{
+				pointsLabel.setText(player.getCategoryScore().getPoints() + " points");
+			} else {
 				categoryBox.setPromptText("Category");
 			}
 			if (action == 3)
@@ -126,7 +120,9 @@ public class PlayingStrategy implements GameScreenStrategy {
 			pointsLabel.setText("");
 			categoryBox.setVisible(false);
 			categoryBox.setPromptText("Category");
-			categoryBox.getItems().remove(categoryBox.getItems().indexOf(selectedCategory));
+			if (!selectedCategory.equals(LowerSectionCategory.BONUS_YAHTZEE)){
+				categoryBox.getItems().remove(categoryBox.getItems().indexOf(selectedCategory));
+			}
 			selectedCategory = null;
 			break;
 		}
@@ -228,7 +224,7 @@ public class PlayingStrategy implements GameScreenStrategy {
 			// categoryBox.getSelectionModel().clearSelection();
 			// categoryBox.setValue(null);
 			// categoryBox.setVisible(false);
-			categoryBox.getSelectionModel().selectFirst();
+			// categoryBox.getSelectionModel().selectFirst();
 			player.endTurn();
 		}
 	}
