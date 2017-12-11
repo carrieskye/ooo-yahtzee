@@ -75,8 +75,6 @@ public class ObservingStrategy implements GameScreenStrategy {
 							+ currentPlayer.getCategoryScore().getPoints() + " points");
 				}
 			} catch (Exception e) {
-				System.out.println(e.getMessage());
-
 			}
 		}
 	}

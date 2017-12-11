@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Observable;
 import java.util.Optional;
-
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar.ButtonData;
@@ -17,11 +16,12 @@ import javafx.stage.Stage;
 import view.GameScreen;
 
 public class Game extends Observable {
-	private List<Player> players = new ArrayList<>();
+	private List<Player> players;
 	private static Game uniqueInstance = new Game();
 	private Player currentPlayer;
 
 	private Game() {
+		players = new ArrayList<>();
 	}
 
 	public static Game getInstance() {
@@ -30,6 +30,11 @@ public class Game extends Observable {
 
 	public List<Player> getPlayers() {
 		return players;
+	}
+	
+	public void reset(){
+		players.clear();
+		this.currentPlayer = null;
 	}
 
 	public void registerPlayer(Player player) throws DomainException {
@@ -175,6 +180,7 @@ public class Game extends Observable {
 
 		Optional<ButtonType> result = alert.showAndWait();
 		if (result.get() == buttonTypeYes) {
+			new Yahtzee(new Stage());
 		} else {
 			alert.close();
 		}

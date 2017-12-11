@@ -5,7 +5,6 @@ import domain.Game;
 import domain.Player;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -17,7 +16,7 @@ import javafx.stage.Stage;
 
 public class StartScreen extends BorderPane {
 	private Game game;
-	private HBox hBoxNewPlayers, hBoxButtons;
+	private HBox hBoxTop, hBoxNewPlayers, hBoxButtons;
 	private VBox vBoxNewPlayers;
 	private Label gameLabel, playerLabel, currentPlayersLabel;
 	private TextField playerField;
@@ -27,6 +26,7 @@ public class StartScreen extends BorderPane {
 	public StartScreen(Game game, Stage primaryStage) throws Exception {
 		this.primaryStage = primaryStage;
 		this.game = game;
+		hBoxTop = new HBox(5);
 		hBoxNewPlayers = new HBox(5);
 		hBoxButtons = new HBox(5);
 		vBoxNewPlayers = new VBox(5);
@@ -36,15 +36,16 @@ public class StartScreen extends BorderPane {
 	}
 
 	private void makeGameLabel() {
+		hBoxTop.getStyleClass().add("top-bottom-hbox");
 		gameLabel = new Label("Yahtzee");
-		setLabelLayout(gameLabel);
-		this.setTop(gameLabel);
+		gameLabel.getStyleClass().add("game-label");
+		hBoxTop.getChildren().add(gameLabel);
+		this.setTop(hBoxTop);
 	}
 
 	private void makePlayersInput() {
-		vBoxNewPlayers.setAlignment(Pos.TOP_CENTER);
-		hBoxNewPlayers.setAlignment(Pos.CENTER);
-		hBoxNewPlayers.setMinHeight(50);
+		vBoxNewPlayers.getStyleClass().add("start-screen-vbox");
+		hBoxNewPlayers.getStyleClass().add("start-screen-hbox");
 		playerLabel = new Label("Enter name of player:");
 		playerField = new TextField();
 		currentPlayersLabel = new Label();
@@ -54,22 +55,13 @@ public class StartScreen extends BorderPane {
 	}
 
 	private void makeButtons() {
-		hBoxButtons.setAlignment(Pos.CENTER);
-		hBoxButtons.setMinHeight(50);
+		hBoxButtons.getStyleClass().add("start-screen-hbox");
 		addPlayer = new Button("Add Player");
 		addPlayer.setOnAction(new AddPlayerHandler());
 		hBoxButtons.getChildren().add(addPlayer);
 		launchYahtzee = new Button("Launch Yahtzee");
 		launchYahtzee.setOnAction(new LaunchYahtzeeHandler());
 		this.setBottom(hBoxButtons);
-	}
-
-	private Label setLabelLayout(Label label) {
-		label.setStyle(
-				"-fx-background-color: #FFFFFF; -fx-alignment: center; -fx-font: 25px Tahoma; -fx-font-weight: bold");
-		label.setMinHeight(50);
-		label.setMinWidth(400);
-		return label;
 	}
 
 	private void updateCurrentPlayers() {

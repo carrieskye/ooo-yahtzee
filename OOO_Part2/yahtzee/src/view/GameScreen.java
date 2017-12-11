@@ -1,10 +1,14 @@
 package view;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import domain.Category;
 import domain.Category.LowerSectionCategory;
 import domain.Category.SpecialCategory;
 import domain.Category.UpperSectionCategory;
 import domain.CategoryScore;
+import domain.Game;
 import domain.Player;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
@@ -23,7 +27,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-public class GameScreen extends BorderPane {
+public class GameScreen extends BorderPane implements Observer {
+	private Game game;
 	private Stage stage;
 	private Player player;
 	private GameScreenStrategy currentStrategy, playingStrategy, observingStrategy;
@@ -35,8 +40,9 @@ public class GameScreen extends BorderPane {
 	TableColumn<CategoryScore, Integer> scoreCol;
 	private TableView<CategoryScore> scoreTable;
 
-	public GameScreen(Player player, Player currentPlayer) {
+	public GameScreen(Game game, Player player, Player currentPlayer) {
 		this.player = player;
+		game.addObserver(this);
 		playingStrategy = new PlayingStrategy(player);
 		observingStrategy = new ObservingStrategy(player, currentPlayer);
 		updateStrategy(currentPlayer);
@@ -44,32 +50,23 @@ public class GameScreen extends BorderPane {
 		makeCenter();
 		makeBottom(currentPlayer);
 		makeRight();
-	}
-	
-	public void setStage(Stage stage){
-		this.stage = stage;
+		setStyles();
 	}
 
 	public void makeTop() {
 		hBoxGame = new HBox(5);
-		hBoxGame.getStyleClass().add("top-bottom-hbox");
 		gameLabel = new Label("Yahtzee");
-		gameLabel.getStyleClass().add("game-label");
 		hBoxGame.getChildren().add(gameLabel);
 		this.setTop(hBoxGame);
 	}
 
 	public void makeCenter() {
 		vBoxPoints = new VBox(5);
-		vBoxPoints.setAlignment(Pos.TOP_CENTER);
-		vBoxPoints.setPadding(new Insets(15, 0, 0, 0));
 	}
 
 	public void makeBottom(Player currentPlayer) {
 		hBoxPlayer = new HBox(20);
-		hBoxPlayer.getStyleClass().add("top-bottom-hbox");
 		currentPlayerLabelBottom = new Label(currentPlayer.getUsername() + " playing");
-		currentPlayerLabelBottom.getStyleClass().add("player-label");
 		surrenderButton = new Button("Surrender");
 		surrenderButton.setOnAction(new SurrenderButtonHandler());
 		hBoxPlayer.getChildren().add(currentPlayerLabelBottom);
@@ -82,7 +79,7 @@ public class GameScreen extends BorderPane {
 		categoryCol = new TableColumn<CategoryScore, String>("Category");
 		categoryCol.setMinWidth(100);
 		scoreCol = new TableColumn<CategoryScore, Integer>("Score");
-		scoreCol.setStyle("-fx-alignment: center");
+		scoreCol.getStyleClass().add("score-column");
 		scoreTable.getColumns().add(categoryCol);
 		scoreTable.getColumns().add(scoreCol);
 		ObservableList<CategoryScore> emptyCategoryScores = makeCategories();
@@ -112,6 +109,14 @@ public class GameScreen extends BorderPane {
 		return emptyCategoryScores;
 	}
 
+	public void setStyles() {
+		hBoxGame.getStyleClass().add("top-bottom-hbox");
+		gameLabel.getStyleClass().add("game-label");
+		vBoxPoints.getStyleClass().add("points-vbox");
+		hBoxPlayer.getStyleClass().add("top-bottom-hbox");
+		currentPlayerLabelBottom.getStyleClass().add("player-label");
+	}
+
 	public void start() {
 		hBoxPlayer.getChildren().add(surrenderButton);
 		playingStrategy.makeCenter();
@@ -139,6 +144,7 @@ public class GameScreen extends BorderPane {
 				}
 			}
 		}
+
 		for (CategoryScore totalScore : player.getTotalScoresList()) {
 			if (totalScore != null) {
 				for (CategoryScore categoryScore : scoreTable.getItems()) {
@@ -151,16 +157,26 @@ public class GameScreen extends BorderPane {
 		}
 	}
 
-	public void update(Player currentPlayer) {
-		currentPlayerLabelBottom.setText(currentPlayer.getUsername() + " playing");
-		updateStrategy(currentPlayer);
-		updateScoreTable();
-		currentStrategy.setStrategyCenter();
-		currentStrategy.updateField(currentPlayer);
-	}
-
 	public void endGame() {
 		stage.close();
+	}
+
+	public Stage getStage() {
+		return this.stage;
+	}
+
+	public void setStage(Stage stage) {
+		this.stage = stage;
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		this.game = (Game) o;
+		currentPlayerLabelBottom.setText(game.getCurrentPlayer().getUsername() + " playing");
+		updateStrategy(game.getCurrentPlayer());
+		updateScoreTable();
+		currentStrategy.setStrategyCenter();
+		currentStrategy.updateField(game.getCurrentPlayer());
 	}
 
 	class SurrenderButtonHandler implements EventHandler<ActionEvent> {
@@ -169,10 +185,6 @@ public class GameScreen extends BorderPane {
 			player.surrender();
 			endGame();
 		}
-	}
-	
-	public Stage getStage(){
-		return this.stage;
 	}
 
 }

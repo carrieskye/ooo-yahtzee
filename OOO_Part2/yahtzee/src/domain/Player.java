@@ -1,15 +1,13 @@
 package domain;
 
 import java.util.ArrayList;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Random;
 import domain.Category.LowerSectionCategory;
 import domain.Category.SpecialCategory;
 import domain.Category.UpperSectionCategory;
 import view.GameScreen;
 
-public class Player implements Observer {
+public class Player {
 	private Game game;
 	private String username;
 	private GameScreen screen;
@@ -24,7 +22,6 @@ public class Player implements Observer {
 
 	public Player(Game game, String username) throws DomainException {
 		setUsername(username);
-		game.addObserver(this);
 		this.game = game;
 		this.yahtzeeBonus = 0;
 		this.turn = 0;
@@ -32,9 +29,9 @@ public class Player implements Observer {
 		this.surrendered = false;
 
 		if (game.getCurrentPlayer() == null) {
-			screen = new GameScreen(this, this);
+			screen = new GameScreen(game, this, this);
 		} else {
-			screen = new GameScreen(this, game.getCurrentPlayer());
+			screen = new GameScreen(game, this, game.getCurrentPlayer());
 		}
 
 		thrownDice = new ArrayList<>();
@@ -121,7 +118,6 @@ public class Player implements Observer {
 			}
 			categoryScores.add(currentCategory);
 		}
-		System.out.println(turn);
 		updateTotals();
 		thrownDice.clear();
 		pickedDice.clear();
@@ -179,11 +175,7 @@ public class Player implements Observer {
 		game.endGame();
 	}
 
-	@Override
-	public void update(Observable o, Object arg) {
-		this.game = (Game) o;
-		screen.update(game.getCurrentPlayer());
-	}
+	
 
 	private void setUsername(String username) throws DomainException {
 		if (username.isEmpty() || username == null) {
