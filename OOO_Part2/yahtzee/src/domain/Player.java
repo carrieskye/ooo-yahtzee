@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Random;
-
 import domain.Category.LowerSectionCategory;
 import domain.Category.SpecialCategory;
 import domain.Category.UpperSectionCategory;
@@ -20,7 +19,7 @@ public class Player implements Observer {
 	private CategoryScore currentCategory, upperSectionScore, upperSectionBonus, upperSectionTotal, lowerSectionTotal,
 			grandTotal;
 	private int yahtzeeBonus;
-	private boolean gameOver;
+	private boolean gameOver, surrendered;
 
 	public Player(Game game, String username) throws DomainException {
 		setUsername(username);
@@ -28,6 +27,7 @@ public class Player implements Observer {
 		this.game = game;
 		this.yahtzeeBonus = 0;
 		this.gameOver = false;
+		this.surrendered = false;
 
 		if (game.getCurrentPlayer() == null) {
 			screen = new GameScreen(this, this);
@@ -154,6 +154,40 @@ public class Player implements Observer {
 		currentCategory.updateTotals(grandTotal);
 	}
 
+	public void checkGameOver() {
+		boolean gameOver = true;
+		for (UpperSectionCategory category : UpperSectionCategory.values()) {
+			if (!categoryScores.contains(category)) {
+				gameOver = false;
+			}
+		}
+		for (LowerSectionCategory category : LowerSectionCategory.values()) {
+			if (!categoryScores.contains(category) && !category.equals(LowerSectionCategory.BONUS_YAHTZEE)) {
+				gameOver = false;
+			}
+		}
+		this.gameOver = gameOver;
+	}
+
+	public int calculateTotalScore() {
+		int totalScore = 0;
+		for (CategoryScore categoryScore : getCategoryScoreList()) {
+			totalScore += categoryScore.getPoints();
+		}
+		return totalScore;
+	}
+
+	public void surrender() {
+		this.surrendered = true;
+		game.endGame(false);
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		this.game = (Game) o;
+		screen.update(game.getCurrentPlayer());
+	}
+
 	private void setUsername(String username) throws DomainException {
 		if (username.isEmpty() || username == null) {
 			throw new DomainException("Name cannot be empty.");
@@ -194,38 +228,17 @@ public class Player implements Observer {
 		totalScores.add(grandTotal);
 		return totalScores;
 	}
-	
-	public void checkGameOver(){
-		boolean gameOver = true;
-		for (UpperSectionCategory category : UpperSectionCategory.values()) {
-			if (!categoryScores.contains(category)){
-				gameOver = false;
-			}
-		}
-		for (LowerSectionCategory category : LowerSectionCategory.values()) {
-			if (!categoryScores.contains(category) && !category.equals(LowerSectionCategory.BONUS_YAHTZEE)){
-				gameOver = false;
-			}
-		}
-		this.gameOver = gameOver;
-	}
 
-	public int calculateTotalScore() {
-		int totalScore = 0;
-		for (CategoryScore categoryScore : getCategoryScoreList()) {
-			totalScore += categoryScore.getPoints();
-		}
-		return totalScore;
-	}
-	
-	public boolean isGameOver(){
+	public boolean isGameOver() {
 		return this.gameOver;
 	}
-
-	@Override
-	public void update(Observable o, Object arg) {
-		this.game = (Game) o;
-		screen.update(game.getCurrentPlayer());
+	
+	public boolean surrendered(){
+		return this.surrendered;
+	}
+	
+	public int getGrandTotal(){
+		return this.grandTotal.getPoints();
 	}
 
 }

@@ -24,6 +24,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class GameScreen extends BorderPane {
+	private Stage stage;
 	private Player player;
 	private GameScreenStrategy currentStrategy, playingStrategy, observingStrategy;
 	private HBox hBoxGame, hBoxPlayer;
@@ -43,6 +44,10 @@ public class GameScreen extends BorderPane {
 		makeCenter();
 		makeBottom(currentPlayer);
 		makeRight();
+	}
+	
+	public void setStage(Stage stage){
+		this.stage = stage;
 	}
 
 	public void makeTop() {
@@ -67,7 +72,7 @@ public class GameScreen extends BorderPane {
 		currentPlayerLabelBottom.getStyleClass().add("player-label");
 		surrenderButton = new Button("Surrender");
 		surrenderButton.setOnAction(new SurrenderButtonHandler());
-		hBoxPlayer.getChildren().addAll(currentPlayerLabelBottom, surrenderButton);
+		hBoxPlayer.getChildren().add(currentPlayerLabelBottom);
 		this.setBottom(hBoxPlayer);
 	}
 
@@ -108,6 +113,7 @@ public class GameScreen extends BorderPane {
 	}
 
 	public void start() {
+		hBoxPlayer.getChildren().add(surrenderButton);
 		playingStrategy.makeCenter();
 		observingStrategy.makeCenter();
 		currentStrategy.setStrategyCenter();
@@ -154,14 +160,19 @@ public class GameScreen extends BorderPane {
 	}
 
 	public void endGame() {
-		//TODO
+		stage.close();
 	}
 
 	class SurrenderButtonHandler implements EventHandler<ActionEvent> {
 		@Override
 		public void handle(ActionEvent event) {
+			player.surrender();
 			endGame();
 		}
+	}
+	
+	public Stage getStage(){
+		return this.stage;
 	}
 
 }

@@ -1,6 +1,5 @@
 package view;
 
-import java.util.ArrayList;
 import domain.DomainException;
 import domain.Game;
 import domain.Player;
@@ -24,7 +23,6 @@ public class StartScreen extends BorderPane {
 	private TextField playerField;
 	private Stage primaryStage;
 	private Button addPlayer, launchYahtzee;
-	private ArrayList<Stage> playerStages = new ArrayList<>();
 
 	public StartScreen(Game game, Stage primaryStage) throws Exception {
 		this.primaryStage = primaryStage;
@@ -93,7 +91,7 @@ public class StartScreen extends BorderPane {
 		stage.setTitle("Screen of " + player.getUsername());
 		stage.setScene(scene);
 		stage.show();
-		playerStages.add(stage);
+		player.getGameScreen().setStage(stage);
 	}
 
 	class AddPlayerHandler implements EventHandler<ActionEvent> {

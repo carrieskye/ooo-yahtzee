@@ -7,13 +7,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Observable;
+import java.util.Optional;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.ButtonType;
 import view.GameScreen;
 
 public class Game extends Observable {
 	private List<Player> players = new ArrayList<>();
 	private static Game uniqueInstance = new Game();
 	private Player currentPlayer;
-	private static final int MAX_TURN = 13;
 
 	private Game() {
 	}
@@ -118,12 +122,73 @@ public class Game extends Observable {
 		for (Player player : players) {
 			player.getGameScreen().endGame();
 		}
-		somethingChanged();
+		endGame(true);
 	}
 
 	public void somethingChanged() {
 		setChanged();
 		notifyObservers();
+	}
+
+	public void endGame(boolean finished) {
+		Player surrenderedPlayer = null;
+
+		for (Player player : players) {
+			player.getGameScreen().getStage().close();
+			if (player.surrendered()) {
+				surrenderedPlayer = player;
+			}
+		}
+		surrenderAlert(surrenderedPlayer);
+
+	}
+
+	public ArrayList<Player> getWinner() {
+		Player winner = null;
+		Player secondWinner = null;
+		int maxPoints = -1;
+		for (Player player : players) {
+			if (player.getGrandTotal() > maxPoints && !player.surrendered()) {
+				maxPoints = player.getGrandTotal();
+				winner = player;
+			} else if (player.getGrandTotal() == maxPoints && !player.surrendered()) {
+				secondWinner = player;
+			}
+		}
+		ArrayList<Player> winners = new ArrayList<>();
+		winners.add(winner);
+		if (secondWinner != null) {
+			if (secondWinner.getGrandTotal() == winner.getGrandTotal()) {
+				winners.add(secondWinner);
+			}
+		}
+		return winners;
+	}
+
+	public void surrenderAlert(Player player) {
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		alert.setTitle("Surrender");
+		String header = player.getUsername() + " surrendered.\n";
+		if (getWinner().size() == 1) {
+			header += getWinner().get(0).getUsername() + " won with " + getWinner().get(0).getGrandTotal() + " points!";
+		} else if (getWinner().size() == 2) {
+			header += getWinner().get(0).getUsername() + " and " + getWinner().get(1).getUsername() + " won with "
+					+ getWinner().get(0).getGrandTotal() + " points!";
+		}
+		alert.setHeaderText(header);
+		alert.setContentText("Want to play again?");
+
+		ButtonType buttonTypeYes = new ButtonType("Yes");
+		ButtonType buttonTypeNo = new ButtonType("No", ButtonData.CANCEL_CLOSE);
+
+		alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
+
+		Optional<ButtonType> result = alert.showAndWait();
+		if (result.get() == buttonTypeYes) {
+			// LAUNCH NEW GAME
+		} else {
+			alert.close();
+		}
 	}
 
 }
