@@ -19,7 +19,7 @@ public class Player implements Observer {
 	private CategoryScore currentCategory, upperSectionScore, upperSectionBonus, upperSectionTotal, lowerSectionTotal,
 			grandTotal;
 	private int yahtzeeBonus, turn;
-	private static final int MAX_TURN = 4;
+	private static final int MAX_TURN = 13;
 	private boolean gameOver, surrendered;
 
 	public Player(Game game, String username) throws DomainException {
@@ -75,11 +75,11 @@ public class Player implements Observer {
 		case 2:
 			return new ThrownDice(Dice.TWO, false);
 		case 3:
-			return new ThrownDice(Dice.ONE, false);
+			return new ThrownDice(Dice.THREE, false);
 		case 4:
-			return new ThrownDice(Dice.TWO, false);
+			return new ThrownDice(Dice.FOUR, false);
 		case 5:
-			return new ThrownDice(Dice.ONE, false);
+			return new ThrownDice(Dice.FIVE, false);
 		case 6:
 			return new ThrownDice(Dice.SIX, false);
 		default:

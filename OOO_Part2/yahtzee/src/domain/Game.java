@@ -8,10 +8,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Observable;
 import java.util.Optional;
+
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
+import javafx.stage.Stage;
 import view.GameScreen;
 
 public class Game extends Observable {
@@ -173,7 +175,6 @@ public class Game extends Observable {
 
 		Optional<ButtonType> result = alert.showAndWait();
 		if (result.get() == buttonTypeYes) {
-			// LAUNCH NEW GAME
 		} else {
 			alert.close();
 		}
@@ -200,5 +201,7 @@ public class Game extends Observable {
 		}
 		return winners;
 	}
+	
+
 
 }
