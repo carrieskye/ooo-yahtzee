@@ -1,10 +1,16 @@
 package domain;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.Random;
 import domain.Category.LowerSectionCategory;
 import domain.Category.SpecialCategory;
 import domain.Category.UpperSectionCategory;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.DialogPane;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonBar.ButtonData;
 import view.GameScreen;
 
 public class Player {
@@ -229,5 +235,32 @@ public class Player {
 	public int getGrandTotal(){
 		return this.grandTotal.getPoints();
 	}
+	
+	public boolean endAlert(Player player) {
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		DialogPane dialogPane = alert.getDialogPane();
+		dialogPane.getStylesheets().add(
+				   getClass().getResource("../application/application.css").toExternalForm());
+		dialogPane.getStyleClass().add("alert");		
+		alert.setTitle("Yahtzee");
+		String header = "";
+		if (player != null) {
+			header = player.getUsername() + " surrendered: ";
+		}
+		if (game.getWinner().size() == 1) {
+			header += game.getWinner().get(0).getUsername() + " won with " + game.getWinner().get(0).getGrandTotal() + " points!";
+		} else if (game.getWinner().size() == 2) {
+			header += game.getWinner().get(0).getUsername() + " and " + game.getWinner().get(1).getUsername() + " won with "
+					+ game.getWinner().get(0).getGrandTotal() + " points!";
+		}
+		alert.setHeaderText(header);
+		alert.setContentText("Want to play again?");
 
+		Optional<ButtonType> result = alert.showAndWait();
+		if (result.get() == ButtonType.OK) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 }

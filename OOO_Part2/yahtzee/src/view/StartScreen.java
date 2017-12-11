@@ -3,6 +3,7 @@ package view;
 import domain.DomainException;
 import domain.Game;
 import domain.Player;
+import domain.Yahtzee;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -15,6 +16,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class StartScreen extends BorderPane {
+	private Yahtzee yahtzee;
 	private Game game;
 	private HBox hBoxTop, hBoxNewPlayers, hBoxButtons;
 	private VBox vBoxNewPlayers;
@@ -23,7 +25,8 @@ public class StartScreen extends BorderPane {
 	private Stage primaryStage;
 	private Button addPlayer, launchYahtzee;
 
-	public StartScreen(Game game, Stage primaryStage) throws Exception {
+	public StartScreen(Yahtzee yahtzee, Game game, Stage primaryStage) throws Exception {
+		this.yahtzee = yahtzee;
 		this.primaryStage = primaryStage;
 		this.game = game;
 		hBoxTop = new HBox(5);
@@ -33,6 +36,7 @@ public class StartScreen extends BorderPane {
 		makeGameLabel();
 		makePlayersInput();
 		makeButtons();
+		updateCurrentPlayers();
 	}
 
 	private void makeGameLabel() {
@@ -59,31 +63,23 @@ public class StartScreen extends BorderPane {
 		addPlayer = new Button("Add Player");
 		addPlayer.setOnAction(new AddPlayerHandler());
 		hBoxButtons.getChildren().add(addPlayer);
+
 		launchYahtzee = new Button("Launch Yahtzee");
 		launchYahtzee.setOnAction(new LaunchYahtzeeHandler());
 		this.setBottom(hBoxButtons);
 	}
 
 	private void updateCurrentPlayers() {
-		String playerNames = "Current players:\n";
-		for (Player player : game.getPlayers()) {
-			playerNames += player.getUsername() + "\n";
+		if (game.getPlayers().size() > 0) {
+			String playerNames = "Current players:\n";
+			for (Player player : game.getPlayers()) {
+				playerNames += player.getUsername() + "\n";
+			}
+			currentPlayersLabel.setText(playerNames);
 		}
-		currentPlayersLabel.setText(playerNames);
-
-		if (game.getPlayers().size() == 2) {
+		if (game.getPlayers().size() >= 2 && !hBoxButtons.getChildren().contains(launchYahtzee)) {
 			hBoxButtons.getChildren().add(launchYahtzee);
 		}
-	}
-
-	private void startPlayerScreen(Player player) {
-		Stage stage = new Stage();
-		Scene scene = new Scene(player.getGameScreen(), 1200, 800);
-		scene.getStylesheets().addAll(primaryStage.getScene().getStylesheets());
-		stage.setTitle("Screen of " + player.getUsername());
-		stage.setScene(scene);
-		stage.show();
-		player.getGameScreen().setStage(stage);
 	}
 
 	class AddPlayerHandler implements EventHandler<ActionEvent> {
@@ -96,11 +92,11 @@ public class StartScreen extends BorderPane {
 				playerField.setPromptText("");
 				updateCurrentPlayers();
 				primaryStage.setHeight(225 + 20 * game.getPlayers().size());
-				startPlayerScreen(player);
+				yahtzee.startPlayerScreen(player, "../application/application.css");
 			} catch (DomainException e) {
-				playerField.clear();				
+				playerField.clear();
 				playerField.setPromptText(e.getMessage());
-			}	
+			}
 		}
 	}
 

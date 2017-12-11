@@ -25,12 +25,12 @@
  
  .points-vbox{
  	-fx-alignment: top-center;
- 	-fx-padding: 15 0 0 0;
+ 	-fx-padding: 15.0 0.0 0.0 0.0;
  }
  
  .start-screen-hbox{
  	-fx-alignment: center; 	    
- 	-fx-min-height: 50;
+ 	-fx-min-height: 50.0;
  }
  
  .start-screen-vbox{
@@ -40,8 +40,8 @@
  .top-bottom-hbox{
  	-fx-background-color: #FFFFFF;
  	-fx-alignment: center; 	    
- 	-fx-padding: 10;
- 	-fx-min-height: 50;
+ 	-fx-padding: 10.0;
+ 	-fx-min-height: 50.0;
  }
  
  .dice-images{
@@ -52,15 +52,26 @@
  .dicefield{
  	-fx-alignment: center;
  	-fx-padding: 10.0;
- 	-fx-pref-width: 400;
+ 	-fx-pref-width: 400.0;
  }
  
  .table{
- 	-fx-pref-width: 400;
+ 	-fx-pref-width: 400.0;
  	-fx-padding: 20.0;
  }
  
  .score-column{
  	-fx-alignment:center;
  }
+
+.alert:header *.header-panel{
+	-fx-font: 10.0px Tahoma;
+}
+
+.alert > *.label.content{
+ 	-fx-font: 20.0px Tahoma;
+ 	-fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-min-height: 100.0;
+}
  

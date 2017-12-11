@@ -12,7 +12,7 @@ public class GameSuiteLauncher extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
-		new Yahtzee(primaryStage);
+		new Yahtzee(primaryStage, null);
 
 	}
 
