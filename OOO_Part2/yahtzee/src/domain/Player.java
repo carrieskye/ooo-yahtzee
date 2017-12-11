@@ -18,7 +18,8 @@ public class Player implements Observer {
 	private ArrayList<CategoryScore> categoryScores;
 	private CategoryScore currentCategory, upperSectionScore, upperSectionBonus, upperSectionTotal, lowerSectionTotal,
 			grandTotal;
-	private int yahtzeeBonus;
+	private int yahtzeeBonus, turn;
+	private static final int MAX_TURN = 4;
 	private boolean gameOver, surrendered;
 
 	public Player(Game game, String username) throws DomainException {
@@ -26,6 +27,7 @@ public class Player implements Observer {
 		game.addObserver(this);
 		this.game = game;
 		this.yahtzeeBonus = 0;
+		this.turn = 0;
 		this.gameOver = false;
 		this.surrendered = false;
 
@@ -73,11 +75,11 @@ public class Player implements Observer {
 		case 2:
 			return new ThrownDice(Dice.TWO, false);
 		case 3:
-			return new ThrownDice(Dice.THREE, false);
+			return new ThrownDice(Dice.ONE, false);
 		case 4:
-			return new ThrownDice(Dice.FOUR, false);
+			return new ThrownDice(Dice.TWO, false);
 		case 5:
-			return new ThrownDice(Dice.FIVE, false);
+			return new ThrownDice(Dice.ONE, false);
 		case 6:
 			return new ThrownDice(Dice.SIX, false);
 		default:
@@ -114,8 +116,12 @@ public class Player implements Observer {
 			}
 			yahtzeeBonus += 1;
 		} else {
+			if (!currentCategory.getCategory().equals(LowerSectionCategory.YAHTZEE)){
+				turn += 1;
+			}
 			categoryScores.add(currentCategory);
 		}
+		System.out.println(turn);
 		updateTotals();
 		thrownDice.clear();
 		pickedDice.clear();
@@ -144,7 +150,7 @@ public class Player implements Observer {
 		if (currentCategory.getCategory() instanceof UpperSectionCategory) {
 			currentCategory.updateTotals(upperSectionScore);
 			currentCategory.updateTotals(upperSectionTotal);
-			if (upperSectionScore.getPoints() >= 63 && upperSectionBonus.getPoints() == 0) {
+			if (upperSectionScore.getPoints() >= 13 && upperSectionBonus.getPoints() == 0) {
 				currentCategory.addBonus(upperSectionBonus);
 				currentCategory.addBonus(upperSectionTotal);
 			}
@@ -155,18 +161,9 @@ public class Player implements Observer {
 	}
 
 	public void checkGameOver() {
-		boolean gameOver = true;
-		for (UpperSectionCategory category : UpperSectionCategory.values()) {
-			if (!categoryScores.contains(category)) {
-				gameOver = false;
-			}
+		if (this.turn == MAX_TURN){
+			this.gameOver = true;
 		}
-		for (LowerSectionCategory category : LowerSectionCategory.values()) {
-			if (!categoryScores.contains(category) && !category.equals(LowerSectionCategory.BONUS_YAHTZEE)) {
-				gameOver = false;
-			}
-		}
-		this.gameOver = gameOver;
 	}
 
 	public int calculateTotalScore() {
@@ -179,7 +176,7 @@ public class Player implements Observer {
 
 	public void surrender() {
 		this.surrendered = true;
-		game.endGame(false);
+		game.endGame();
 	}
 
 	@Override

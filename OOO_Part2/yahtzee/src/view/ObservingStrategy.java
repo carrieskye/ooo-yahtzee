@@ -69,9 +69,14 @@ public class ObservingStrategy implements GameScreenStrategy {
 			if (!hBoxPickedDice.getChildren().isEmpty() || !currentPlayer.getPickedDice().isEmpty()) {
 				loadDice(currentPlayer.getPickedDice(), hBoxPickedDice, true);
 			}
-			if (currentPlayer.getCategoryScore() != null) {
-				categoryLabel.setText(currentPlayer.getCategoryScore().getCategory().toString() + ": "
-						+ currentPlayer.getCategoryScore().getPoints() + " points");
+			try {
+				if (currentPlayer.getCategoryScore() != null) {
+					categoryLabel.setText(currentPlayer.getCategoryScore().getCategory().toString() + ": "
+							+ currentPlayer.getCategoryScore().getPoints() + " points");
+				}
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+
 			}
 		}
 	}

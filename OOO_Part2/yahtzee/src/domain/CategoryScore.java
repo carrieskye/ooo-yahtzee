@@ -202,7 +202,7 @@ public class CategoryScore {
 		if (categoryScore.getCategory().equals(SpecialCategory.UPPER_SECTION_BONUS)) {
 			categoryScore.setPoints(35);
 		} else if (categoryScore.getCategory().equals(SpecialCategory.UPPER_SECTION_TOTAL)) {
-			categoryScore.setPoints(getPoints() + 35);
+			categoryScore.setPoints(categoryScore.getPoints() + 35);
 		}
 		return categoryScore;
 

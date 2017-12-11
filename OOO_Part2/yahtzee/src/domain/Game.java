@@ -78,6 +78,15 @@ public class Game extends Observable {
 
 	private void setCurrentPlayer(Player currentPlayer) {
 		if (currentPlayer.isGameOver()) {
+			int i = 0;
+			while (i < players.size() && currentPlayer.isGameOver()) {
+				if (players.indexOf(currentPlayer) == players.size() - 1) {
+					setCurrentPlayer(players.get(0));
+				} else {
+					setCurrentPlayer(players.get(players.indexOf(currentPlayer) + 1));
+				}
+				i++;
+			}
 			gameIsOver();
 		} else {
 			this.currentPlayer = currentPlayer;
@@ -122,7 +131,7 @@ public class Game extends Observable {
 		for (Player player : players) {
 			player.getGameScreen().endGame();
 		}
-		endGame(true);
+		endGame();
 	}
 
 	public void somethingChanged() {
@@ -130,17 +139,44 @@ public class Game extends Observable {
 		notifyObservers();
 	}
 
-	public void endGame(boolean finished) {
+	public void endGame() {
 		Player surrenderedPlayer = null;
-
 		for (Player player : players) {
 			player.getGameScreen().getStage().close();
 			if (player.surrendered()) {
 				surrenderedPlayer = player;
 			}
 		}
-		surrenderAlert(surrenderedPlayer);
+		endAlert(surrenderedPlayer);
+	}
 
+	public void endAlert(Player player) {
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		alert.setTitle("Yahtzee");
+		String header = "";
+		if (player != null) {
+			header = player.getUsername() + " surrendered.\n";
+		}
+		if (getWinner().size() == 1) {
+			header += getWinner().get(0).getUsername() + " won with " + getWinner().get(0).getGrandTotal() + " points!";
+		} else if (getWinner().size() == 2) {
+			header += getWinner().get(0).getUsername() + " and " + getWinner().get(1).getUsername() + " won with "
+					+ getWinner().get(0).getGrandTotal() + " points!";
+		}
+		alert.setHeaderText(header);
+		alert.setContentText("Want to play again?");
+
+		ButtonType buttonTypeYes = new ButtonType("Yes");
+		ButtonType buttonTypeNo = new ButtonType("No", ButtonData.CANCEL_CLOSE);
+
+		alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
+
+		Optional<ButtonType> result = alert.showAndWait();
+		if (result.get() == buttonTypeYes) {
+			// LAUNCH NEW GAME
+		} else {
+			alert.close();
+		}
 	}
 
 	public ArrayList<Player> getWinner() {
@@ -163,32 +199,6 @@ public class Game extends Observable {
 			}
 		}
 		return winners;
-	}
-
-	public void surrenderAlert(Player player) {
-		Alert alert = new Alert(AlertType.CONFIRMATION);
-		alert.setTitle("Surrender");
-		String header = player.getUsername() + " surrendered.\n";
-		if (getWinner().size() == 1) {
-			header += getWinner().get(0).getUsername() + " won with " + getWinner().get(0).getGrandTotal() + " points!";
-		} else if (getWinner().size() == 2) {
-			header += getWinner().get(0).getUsername() + " and " + getWinner().get(1).getUsername() + " won with "
-					+ getWinner().get(0).getGrandTotal() + " points!";
-		}
-		alert.setHeaderText(header);
-		alert.setContentText("Want to play again?");
-
-		ButtonType buttonTypeYes = new ButtonType("Yes");
-		ButtonType buttonTypeNo = new ButtonType("No", ButtonData.CANCEL_CLOSE);
-
-		alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
-
-		Optional<ButtonType> result = alert.showAndWait();
-		if (result.get() == buttonTypeYes) {
-			// LAUNCH NEW GAME
-		} else {
-			alert.close();
-		}
 	}
 
 }
