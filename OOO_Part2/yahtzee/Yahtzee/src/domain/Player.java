@@ -23,7 +23,7 @@ public class Player {
 	private CategoryScore currentCategory, upperSectionScore, upperSectionBonus, upperSectionTotal, lowerSectionTotal,
 			grandTotal;
 	private int yahtzeeBonus, turn;
-	private static final int MAX_TURN = 13;
+	private static final int MAX_TURN = 63;
 	private boolean gameOver, surrendered;
 
 	public Player(Game game, String username) throws DomainException {

@@ -1,7 +1,6 @@
 package domain;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.InputStream;
 import javafx.scene.image.Image;
 
 public enum Dice {
@@ -12,11 +11,10 @@ public enum Dice {
 
 	private Dice(int number) {
 		this.number = number;
-		FileInputStream inputstream;
 		try {
-			inputstream = new FileInputStream("resources/dice/dice-" + number + ".png");
-			this.img = new Image(inputstream);
-		} catch (FileNotFoundException e) {
+			InputStream resourceBuff = this.getClass().getResourceAsStream("/dice/dice-" + number + ".png");
+			this.img = new Image(resourceBuff);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
