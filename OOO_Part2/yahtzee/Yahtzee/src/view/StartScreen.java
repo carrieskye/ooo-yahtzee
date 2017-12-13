@@ -1,5 +1,6 @@
 package view;
 
+import controller.StartController;
 import domain.DomainException;
 import domain.Game;
 import domain.Player;
@@ -15,19 +16,15 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class StartScreen extends BorderPane {
-	private Yahtzee yahtzee;
-	private Game game;
+	private StartController controller;
 	private HBox hBoxTop, hBoxNewPlayers, hBoxButtons;
 	private VBox vBoxNewPlayers;
 	private Label gameLabel, playerLabel, currentPlayersLabel;
 	private TextField playerField;
-	private Stage primaryStage;
 	private Button addPlayer, launchYahtzee;
 
-	public StartScreen(Yahtzee yahtzee, Game game, Stage primaryStage) throws Exception {
-		this.yahtzee = yahtzee;
-		this.primaryStage = primaryStage;
-		this.game = game;
+	public StartScreen(StartController controller) throws Exception {
+		this.controller = controller;
 		hBoxTop = new HBox(5);
 		hBoxNewPlayers = new HBox(5);
 		hBoxButtons = new HBox(5);
@@ -35,7 +32,7 @@ public class StartScreen extends BorderPane {
 		makeGameLabel();
 		makePlayersInput();
 		makeButtons();
-		updateCurrentPlayers();
+		controller.updateCurrentPlayers();
 	}
 
 	private void makeGameLabel() {
@@ -68,43 +65,20 @@ public class StartScreen extends BorderPane {
 		this.setBottom(hBoxButtons);
 	}
 
-	private void updateCurrentPlayers() {
-		if (game.getPlayers().size() > 0) {
-			String playerNames = "Current players:\n";
-			for (Player player : game.getPlayers()) {
-				playerNames += player.getUsername() + "\n";
-			}
-			currentPlayersLabel.setText(playerNames);
-		}
-		if (game.getPlayers().size() >= 2 && !hBoxButtons.getChildren().contains(launchYahtzee)) {
-			hBoxButtons.getChildren().add(launchYahtzee);
-		}
+	public HBox gethBoxButtons() {
+		return this.hBoxButtons;
 	}
 
-	class AddPlayerHandler implements EventHandler<ActionEvent> {
-		@Override
-		public void handle(ActionEvent event) {
-			try {
-				Player player = new Player(game, playerField.getText());
-				game.registerPlayer(player);
-				playerField.clear();
-				playerField.setPromptText("");
-				updateCurrentPlayers();
-				primaryStage.setHeight(225 + 20 * game.getPlayers().size());
-				yahtzee.startPlayerScreen(player, "../application/application.css");
-			} catch (DomainException e) {
-				playerField.clear();
-				playerField.setPromptText(e.getMessage());
-			}
-		}
+	public TextField getPlayerField() {
+		return this.playerField;
 	}
-	class LaunchYahtzeeHandler implements EventHandler<ActionEvent> {
-		@Override
-		public void handle(ActionEvent event) {
-			game.startGame();
-			primaryStage.close();
-		}
+
+	public Label getCurrentPlayersLabel() {
+		return this.currentPlayersLabel;
 	}
-	
+
+	public Button getLaunchYahtzee() {
+		return this.launchYahtzee;
+	}
 
 }
