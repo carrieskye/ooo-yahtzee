@@ -190,7 +190,7 @@ public class CategoryScore {
 	}
 
 	public CategoryScore updateTotals(CategoryScore categoryScore) {
-		if (!this.equals(LowerSectionCategory.BONUS_YAHTZEE)) {
+		if (!this.getCategory().equals(LowerSectionCategory.BONUS_YAHTZEE)) {
 			categoryScore.setPoints(categoryScore.getPoints() + this.points);
 		} else {
 			categoryScore.setPoints(categoryScore.getPoints() + 100);

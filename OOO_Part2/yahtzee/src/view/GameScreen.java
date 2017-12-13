@@ -115,6 +115,7 @@ public class GameScreen extends BorderPane implements Observer {
 		currentPlayerLabelBottom.getStyleClass().add("player-label");
 	}
 
+	@SuppressWarnings("static-access")
 	public void start() {
 		hBoxPlayer.getChildren().add(surrenderButton);
 		playingStrategy.makeCenter();
