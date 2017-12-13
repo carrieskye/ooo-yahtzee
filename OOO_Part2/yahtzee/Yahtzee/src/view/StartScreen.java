@@ -98,7 +98,6 @@ public class StartScreen extends BorderPane {
 			}
 		}
 	}
-
 	class LaunchYahtzeeHandler implements EventHandler<ActionEvent> {
 		@Override
 		public void handle(ActionEvent event) {
@@ -106,5 +105,6 @@ public class StartScreen extends BorderPane {
 			primaryStage.close();
 		}
 	}
+	
 
 }
