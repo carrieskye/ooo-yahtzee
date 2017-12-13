@@ -119,7 +119,7 @@ public class Player {
 			}
 			yahtzeeBonus += 1;
 		} else {
-			if (!currentCategory.getCategory().equals(LowerSectionCategory.YAHTZEE)){
+			if (!currentCategory.getCategory().equals(LowerSectionCategory.YAHTZEE)) {
 				turn += 1;
 			}
 			categoryScores.add(currentCategory);
@@ -163,7 +163,7 @@ public class Player {
 	}
 
 	public void checkGameOver() {
-		if (this.turn == MAX_TURN){
+		if (this.turn == MAX_TURN) {
 			this.gameOver = true;
 		}
 	}
@@ -180,8 +180,6 @@ public class Player {
 		this.surrendered = true;
 		game.endGame();
 	}
-
-	
 
 	private void setUsername(String username) throws DomainException {
 		if (username.isEmpty() || username == null) {
@@ -227,31 +225,31 @@ public class Player {
 	public boolean isGameOver() {
 		return this.gameOver;
 	}
-	
-	public boolean surrendered(){
+
+	public boolean surrendered() {
 		return this.surrendered;
 	}
-	
-	public int getGrandTotal(){
+
+	public int getGrandTotal() {
 		return this.grandTotal.getPoints();
 	}
-	
+
 	public boolean endAlert(Player player) {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		DialogPane dialogPane = alert.getDialogPane();
-		dialogPane.getStylesheets().add(
-				   getClass().getResource("../application/application.css").toExternalForm());
-		dialogPane.getStyleClass().add("alert");		
+		dialogPane.getStylesheets().add(getClass().getResource("../application/application.css").toExternalForm());
+		dialogPane.getStyleClass().add("alert");
 		alert.setTitle("Yahtzee");
 		String header = "";
 		if (player != null) {
 			header = player.getUsername() + " surrendered: ";
 		}
 		if (game.getWinner().size() == 1) {
-			header += game.getWinner().get(0).getUsername() + " won with " + game.getWinner().get(0).getGrandTotal() + " points!";
+			header += game.getWinner().get(0).getUsername() + " won with " + game.getWinner().get(0).getGrandTotal()
+					+ " points!";
 		} else if (game.getWinner().size() == 2) {
-			header += game.getWinner().get(0).getUsername() + " and " + game.getWinner().get(1).getUsername() + " won with "
-					+ game.getWinner().get(0).getGrandTotal() + " points!";
+			header += game.getWinner().get(0).getUsername() + " and " + game.getWinner().get(1).getUsername()
+					+ " won with " + game.getWinner().get(0).getGrandTotal() + " points!";
 		}
 		alert.setHeaderText(header);
 		alert.setContentText("Want to play again?");
