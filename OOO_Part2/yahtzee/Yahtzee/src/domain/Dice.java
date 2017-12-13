@@ -17,16 +17,15 @@ public enum Dice {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	public Image getImage() {
 		return this.img;
 	}
-	
-	public int getNumber(){
+
+	public int getNumber() {
 		return this.number;
 	}
-
 
 }

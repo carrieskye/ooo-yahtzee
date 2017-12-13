@@ -3,14 +3,14 @@ package domain;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Random;
+
 import domain.Category.LowerSectionCategory;
 import domain.Category.SpecialCategory;
 import domain.Category.UpperSectionCategory;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonBar.ButtonData;
 import view.GameScreen;
 
 public class Player {

@@ -2,6 +2,7 @@ package view;
 
 import java.util.Observable;
 import java.util.Observer;
+
 import domain.Category;
 import domain.Category.LowerSectionCategory;
 import domain.Category.SpecialCategory;
@@ -115,6 +116,7 @@ public class GameScreen extends BorderPane implements Observer {
 		currentPlayerLabelBottom.getStyleClass().add("player-label");
 	}
 
+	@SuppressWarnings("static-access")
 	public void start() {
 		hBoxPlayer.getChildren().add(surrenderButton);
 		playingStrategy.makeCenter();
@@ -151,7 +153,6 @@ public class GameScreen extends BorderPane implements Observer {
 					}
 				}
 			}
-
 		}
 	}
 
