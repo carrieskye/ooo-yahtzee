@@ -12,6 +12,7 @@ public class CategoryScore {
 	private ArrayList<Dice> pickedDice;
 	private Category category;
 	private int points;
+	private boolean picked;
 
 	public CategoryScore(Category category) {
 		this.category = category;
@@ -215,5 +216,13 @@ public class CategoryScore {
 	public void setYahtzeeBonus(int index, ArrayList<Dice> dice) {
 		setDice(dice);
 		setPoints((index + 1) * 100);
+	}
+
+	public boolean isPicked() {
+		return picked;
+	}
+
+	public void setPicked(boolean picked) {
+		this.picked = picked;
 	}
 }

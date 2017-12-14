@@ -1,7 +1,6 @@
 package view;
 
 import java.util.ArrayList;
-
 import controller.ObservingStrategyController;
 import controller.PlayerController;
 import controller.PlayingStrategyController;
@@ -11,11 +10,16 @@ import domain.Category.SpecialCategory;
 import domain.Category.UpperSectionCategory;
 import domain.CategoryScore;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -23,6 +27,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 public class GameScreen extends BorderPane {
 	private String currentPlayer;
@@ -89,6 +94,26 @@ public class GameScreen extends BorderPane {
 		categoryCol.setMinWidth(100);
 		scoreCol = new TableColumn<CategoryScore, Integer>("Score");
 		scoreCol.getStyleClass().add("score-column");
+		categoryCol.setSortable(false);
+		scoreCol.setCellValueFactory(
+				new Callback<TableColumn.CellDataFeatures<CategoryScore, Integer>, ObservableValue<Integer>>() {
+
+					@Override
+					public ObservableValue<Integer> call(TableColumn.CellDataFeatures<CategoryScore, Integer> p) {
+						return new SimpleIntegerProperty(p.getValue().getPoints()).asObject();
+					}
+				});
+
+		scoreCol.setCellFactory(new Callback<TableColumn<CategoryScore, Integer>, TableCell<CategoryScore, Integer>>() {
+
+			@Override
+			public TableCell<CategoryScore, Integer> call(TableColumn<CategoryScore, Integer> p) {
+				return new ButtonCell();
+
+			}
+
+		});
+
 		scoreTable.getColumns().add(categoryCol);
 		scoreTable.getColumns().add(scoreCol);
 		ObservableList<CategoryScore> emptyCategoryScores = makeCategories();
@@ -196,6 +221,32 @@ public class GameScreen extends BorderPane {
 
 	public Label getCurrentPlayerLabelBottom() {
 		return this.currentPlayerLabelBottom;
+	}
+
+	private class ButtonCell extends TableCell<CategoryScore, Integer> {
+		final Button chooseButton = new Button("OK");
+
+		ButtonCell() {
+			this.chooseButton.getStyleClass().add("ok-button");
+			 chooseButton.setVisible(false);
+			chooseButton.setOnAction(new EventHandler<ActionEvent>() {
+
+				@Override
+				public void handle(ActionEvent t) {
+					System.out.println("test");
+					// ...
+				}
+			});
+		}
+
+		@Override
+		protected void updateItem(Integer i, boolean empty) {
+			super.updateItem(i, empty);
+			if (!empty) {
+				setGraphic(chooseButton);
+				setText(i.toString());
+			}
+		}
 	}
 
 }

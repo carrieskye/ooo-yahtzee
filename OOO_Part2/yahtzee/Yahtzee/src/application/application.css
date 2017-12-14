@@ -74,4 +74,8 @@
     -fx-alignment: center;
     -fx-min-height: 100.0;
 }
+
+.ok-button{
+	-fx-font-size:9.0px;
+}
  
