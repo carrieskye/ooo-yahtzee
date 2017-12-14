@@ -1,6 +1,5 @@
 package application;
 
-import domain.Yahtzee;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -13,7 +12,6 @@ public class GameSuiteLauncher extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		new Yahtzee(primaryStage, null);
-
 	}
 
 }

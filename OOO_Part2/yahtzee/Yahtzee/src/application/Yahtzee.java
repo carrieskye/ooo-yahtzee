@@ -1,24 +1,20 @@
-package domain;
+package application;
 
 import java.util.ArrayList;
-
 import javax.swing.JOptionPane;
-
-import controller.StartController;
-import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
+import controller.GameController;
+import domain.Game;
+import domain.Player;
 import javafx.stage.Stage;
-import view.StartScreen;
 
 public class Yahtzee {
 	private Game game;
-
 
 	public Yahtzee(Stage stage, ArrayList<Player> players) {
 		try {
 			game = Game.getInstance();
 			game.reset();
-			StartController startController = new StartController(this, stage, game);
+			GameController startController = new GameController(this, stage, game);
 			if (players != null) {
 				for (Player oldPlayer : players) {
 					Player player = new Player(game, oldPlayer.getUsername());
@@ -26,14 +22,9 @@ public class Yahtzee {
 					startController.startPlayerScreen(player, "../application/application.css");
 				}
 			}
-			
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, e.getMessage());
 		}
 	}
-
-
-
-
 	
 }

@@ -1,29 +1,22 @@
 package view;
 
-import controller.StartController;
-import domain.DomainException;
-import domain.Game;
-import domain.Player;
-import domain.Yahtzee;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import controller.GameController;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
 public class StartScreen extends BorderPane {
-	private StartController controller;
+	private GameController controller;
 	private HBox hBoxTop, hBoxNewPlayers, hBoxButtons;
 	private VBox vBoxNewPlayers;
 	private Label gameLabel, playerLabel, currentPlayersLabel;
 	private TextField playerField;
 	private Button addPlayer, launchYahtzee;
 
-	public StartScreen(StartController controller) throws Exception {
+	public StartScreen(GameController controller) throws Exception {
 		this.controller = controller;
 		hBoxTop = new HBox(5);
 		hBoxNewPlayers = new HBox(5);
@@ -57,11 +50,11 @@ public class StartScreen extends BorderPane {
 	private void makeButtons() {
 		hBoxButtons.getStyleClass().add("start-screen-hbox");
 		addPlayer = new Button("Add Player");
-		addPlayer.setOnAction(new AddPlayerHandler());
+		controller.addAddPlayerHandler(addPlayer);
 		hBoxButtons.getChildren().add(addPlayer);
 
 		launchYahtzee = new Button("Launch Yahtzee");
-		launchYahtzee.setOnAction(new LaunchYahtzeeHandler());
+		controller.addLaunchYahtzeeHandler(launchYahtzee);
 		this.setBottom(hBoxButtons);
 	}
 

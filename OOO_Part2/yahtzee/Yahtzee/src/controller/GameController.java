@@ -1,22 +1,23 @@
 package controller;
 
+import application.Yahtzee;
 import domain.DomainException;
 import domain.Game;
 import domain.Player;
-import domain.Yahtzee;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.stage.Stage;
 import view.StartScreen;
 
-public class StartController {
+public class GameController {
 	private StartScreen screen;
 	private Scene scene;
 	private Stage stage;
 	private Game game;
 
-	public StartController(Yahtzee yahtzee, Stage stage, Game game) throws Exception {
+	public GameController(Yahtzee yahtzee, Stage stage, Game game) throws Exception {
 		this.game = game;
 		this.stage = stage;
 		screen = new StartScreen(this);
@@ -51,6 +52,14 @@ public class StartController {
 		}
 	}
 	
+	public void addLaunchYahtzeeHandler(Button button){
+		button.setOnAction(new LaunchYahtzeeHandler());
+	}
+	
+	public void addAddPlayerHandler(Button button){
+		button.setOnAction(new AddPlayerHandler());
+	}
+	
 
 	class AddPlayerHandler implements EventHandler<ActionEvent> {
 		@Override
@@ -69,6 +78,7 @@ public class StartController {
 			}
 		}
 	}
+	
 	class LaunchYahtzeeHandler implements EventHandler<ActionEvent> {
 		@Override
 		public void handle(ActionEvent event) {
