@@ -108,7 +108,7 @@ public class PlayingStrategy implements GameScreenStrategy {
 			if (!hBoxPickedDice.getChildren().isEmpty() || !pickedDice.isEmpty()) {
 				loadDice(pickedDice, hBoxPickedDice, true);
 			}
-			if (selectedCategory != null) {
+			if (selectedCategory != null || categoryBox.getItems().size() == 1) {
 				submitButton.setVisible(true);
 				pointsLabel.setText(points + " points");
 			} else {
@@ -125,7 +125,7 @@ public class PlayingStrategy implements GameScreenStrategy {
 			pointsLabel.setText("");
 			categoryBox.setVisible(false);
 			categoryBox.setPromptText("Category");
-			if (!selectedCategory.equals(LowerSectionCategory.BONUS_YAHTZEE)) {
+			if (selectedCategory != null && !selectedCategory.equals(LowerSectionCategory.BONUS_YAHTZEE)) {
 				categoryBox.getItems().remove(categoryBox.getItems().indexOf(selectedCategory));
 			}
 			selectedCategory = null;

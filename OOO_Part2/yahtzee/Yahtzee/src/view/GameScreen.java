@@ -25,7 +25,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class GameScreen extends BorderPane {
-
+	private String currentPlayer;
 	private PlayerController controller;
 	private Stage stage;
 	private GameScreenStrategy currentStrategy, playingStrategy, observingStrategy;
@@ -37,11 +37,17 @@ public class GameScreen extends BorderPane {
 	TableColumn<CategoryScore, Integer> scoreCol;
 	private TableView<CategoryScore> scoreTable;
 
-	public GameScreen(PlayerController controller, String player, String currentPlayer) {
-		this.controller = controller;
+	public GameScreen(String player, String currentPlayer) {
+		this.currentPlayer = currentPlayer;
 		this.playingStrategy = new PlayingStrategy(player);
 		this.observingStrategy = new ObservingStrategy(player, currentPlayer);
+	}
+
+	public void initialize(PlayerController controller) {
+		this.controller = controller;
 		controller.updateStrategy();
+		controller.addControllersToScreen();
+
 		makeTop();
 		makeCenter();
 		makeBottom(currentPlayer);
@@ -170,6 +176,14 @@ public class GameScreen extends BorderPane {
 
 	public GameScreenStrategy getPlayingStrategy() {
 		return this.playingStrategy;
+	}
+
+	public void setPlayingStrategy() {
+		this.currentStrategy = playingStrategy;
+	}
+
+	public void setObservingStrategy() {
+		this.currentStrategy = observingStrategy;
 	}
 
 	public GameScreenStrategy getCurrentStrategy() {

@@ -87,22 +87,25 @@ public class GameController {
 			new Yahtzee(new Stage(), newPlayers);
 		}
 	}
+	
+	public void initializePlayer(String username) throws DomainException{
+		Player player = new Player(game, username);
+		game.registerPlayer(player);
+		GameScreen playerScreen = new GameScreen(player.getUsername(), game.getCurrentPlayer().getUsername());
+		PlayerController controller = new PlayerController(game, player, playerScreen);
+		playerScreen.initialize(controller);
+		startPlayerScreen(player, playerScreen, "../application/application.css");
+	}
 
 	class AddPlayerHandler implements EventHandler<ActionEvent> {
 		@Override
 		public void handle(ActionEvent event) {
 			try {
-				Player player = new Player(game, screen.getPlayerField().getText());
-				game.registerPlayer(player);
-				PlayerController controller = new PlayerController(game, player);
-				GameScreen playerScreen = new GameScreen(controller, player.getUsername(),
-						game.getCurrentPlayer().getUsername());
-				controller.addScreen(playerScreen);
+				initializePlayer(screen.getPlayerField().getText());
 				screen.getPlayerField().clear();
 				screen.getPlayerField().setPromptText("");
 				updateCurrentPlayers();
 				stage.setHeight(225 + 20 * game.getPlayers().size());
-				startPlayerScreen(player, playerScreen, "../application/application.css");
 			} catch (DomainException e) {
 				screen.getPlayerField().clear();
 				screen.getPlayerField().setPromptText(e.getMessage());

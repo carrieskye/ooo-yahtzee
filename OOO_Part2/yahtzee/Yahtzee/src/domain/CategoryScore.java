@@ -114,7 +114,7 @@ public class CategoryScore {
 			case FULL_HOUSE:
 				return fullHouse();
 			case SMALL_STRAIGHT:
-				return straight() == 4 ? true : false;
+				return straight() >= 4 ? true : false;
 			case LARGE_STRAIGHT:
 				return straight() == 5 ? true : false;
 			case YAHTZEE:
@@ -133,7 +133,7 @@ public class CategoryScore {
 
 	public boolean correctFrequencyOfDice(int frequency) {
 		for (Dice dice : pickedDice) {
-			if (getFrequencyOfValue(dice.getNumber()) == frequency) {
+			if (getFrequencyOfValue(dice.getNumber()) >= frequency) {
 				return true;
 			}
 		}
@@ -205,6 +205,8 @@ public class CategoryScore {
 			categoryScore.setPoints(35);
 		} else if (categoryScore.getCategory().equals(SpecialCategory.UPPER_SECTION_TOTAL)) {
 			categoryScore.setPoints(categoryScore.getPoints() + 35);
+		} else if (categoryScore.getCategory().equals(SpecialCategory.GRAND_TOTAL)){
+			categoryScore.setPoints(categoryScore.getPoints()+35);
 		}
 		return categoryScore;
 

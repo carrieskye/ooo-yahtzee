@@ -18,7 +18,7 @@ public class Player {
 	private CategoryScore currentCategory, upperSectionScore, upperSectionBonus, upperSectionTotal, lowerSectionTotal,
 			grandTotal;
 	private int yahtzeeBonus, turn;
-	private static final int MAX_TURN = 63;
+	private static final int MAX_TURN = 13;
 	private boolean gameOver, surrendered;
 
 	public Player(Game game, String username) throws DomainException {
@@ -133,9 +133,9 @@ public class Player {
 		thrownDice.clear();
 		pickedDice.clear();
 		currentCategory = null;
+		checkGameOver();
 		game.showDice();
 		game.updateCurrentPlayer();
-		checkGameOver();
 	}
 
 	public void calculateCategoryScore(Category category) {
@@ -157,9 +157,10 @@ public class Player {
 		if (currentCategory.getCategory() instanceof UpperSectionCategory) {
 			currentCategory.updateTotals(upperSectionScore);
 			currentCategory.updateTotals(upperSectionTotal);
-			if (upperSectionScore.getPoints() >= 13 && upperSectionBonus.getPoints() == 0) {
+			if (upperSectionScore.getPoints() >= 63 && upperSectionBonus.getPoints() == 0) {
 				currentCategory.addBonus(upperSectionBonus);
 				currentCategory.addBonus(upperSectionTotal);
+				currentCategory.addBonus(grandTotal);
 			}
 		} else if (currentCategory.getCategory() instanceof LowerSectionCategory) {
 			currentCategory.updateTotals(lowerSectionTotal);
@@ -233,6 +234,10 @@ public class Player {
 
 	public int getGrandTotal() {
 		return this.grandTotal.getPoints();
+	}
+	
+	public int getTurn(){
+		return this.turn;
 	}
 
 }
