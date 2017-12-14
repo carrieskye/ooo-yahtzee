@@ -7,10 +7,9 @@ import view.GameScreen;
 import view.GameScreenStrategy;
 
 public class ObservingStrategyController extends PlayerController {
-	private GameScreen screen;
 
 	public ObservingStrategyController(Game game, Player player, GameScreen screen, GameScreenStrategy strategy ) {
-		super(game, player);
+		super(game, player, screen);
 		this.screen = screen;
 	}
 

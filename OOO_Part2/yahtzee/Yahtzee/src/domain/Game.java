@@ -79,9 +79,9 @@ public class Game extends Observable {
 			int i = 0;
 			while (i < players.size() && currentPlayer.isGameOver()) {
 				if (players.indexOf(currentPlayer) == players.size() - 1) {
-					setCurrentPlayer(players.get(0));
+					this.currentPlayer = players.get(0);
 				} else {
-					setCurrentPlayer(players.get(players.indexOf(currentPlayer) + 1));
+					this.currentPlayer = players.get(players.indexOf(currentPlayer) + 1);
 				}
 				i++;
 			}

@@ -15,16 +15,13 @@ import view.GameScreenStrategy;
 import view.PlayingStrategy;
 
 public class PlayingStrategyController extends PlayerController {
-	private Player player;
-	private GameScreen screen;
 	private PlayingStrategy strategy;
 
 	public PlayingStrategyController(Game game, Player player, GameScreen screen, GameScreenStrategy strategy) {
-		super(game, player);
+		super(game, player, screen);
 		this.strategy = (PlayingStrategy) strategy;
 		this.screen = screen;
 	}
-
 
 	public void addRollDiceHandler(Button button) {
 		button.setOnAction(new RollDiceHandler());
@@ -45,8 +42,8 @@ public class PlayingStrategyController extends PlayerController {
 	public void addSubmitHandler(Button button) {
 		button.setOnAction(new SubmitHandler());
 	}
-	
-	public void setCenter(VBox vbox){
+
+	public void setCenter(VBox vbox) {
 		screen.setCenter(vbox);
 	}
 
@@ -108,7 +105,8 @@ public class PlayingStrategyController extends PlayerController {
 		@Override
 		public void handle(ActionEvent event) {
 			try {
-				if (strategy.getCategoryBox().getValue().equals(LowerSectionCategory.YAHTZEE)) {
+				if (strategy.getCategoryBox().getValue().equals(LowerSectionCategory.YAHTZEE)
+						&& player.getCategoryScore().getPoints() != 0) {
 					strategy.getCategoryBox().getItems().add(LowerSectionCategory.BONUS_YAHTZEE);
 				}
 			} catch (IllegalArgumentException e) {
