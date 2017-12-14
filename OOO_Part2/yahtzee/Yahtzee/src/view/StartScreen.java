@@ -52,7 +52,6 @@ public class StartScreen extends BorderPane {
 		addPlayer = new Button("Add Player");
 		controller.addAddPlayerHandler(addPlayer);
 		hBoxButtons.getChildren().add(addPlayer);
-
 		launchYahtzee = new Button("Launch Yahtzee");
 		controller.addLaunchYahtzeeHandler(launchYahtzee);
 		this.setBottom(hBoxButtons);

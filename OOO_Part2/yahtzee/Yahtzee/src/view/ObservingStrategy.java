@@ -2,7 +2,8 @@ package view;
 
 import java.util.ArrayList;
 
-import domain.Player;
+import controller.ObservingStrategyController;
+import controller.PlayerController;
 import domain.ThrownDice;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -13,15 +14,14 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 public class ObservingStrategy implements GameScreenStrategy {
+	private ObservingStrategyController controller;
 	private VBox vBoxDice;
 	private HBox hBoxThrownDice, hBoxPickedDice, hBoxScore;
 	private Label currentPlayerLabelCenter, categoryLabel;
-	private Player currentPlayer;
-	private Player player;
+	private String currentPlayer;
 
-	public ObservingStrategy(Player player, Player initialCurrentPlayer) {
+	public ObservingStrategy(String player, String initialCurrentPlayer) {
 		this.currentPlayer = initialCurrentPlayer;
-		this.player = player;
 		initialize();
 	}
 
@@ -41,38 +41,37 @@ public class ObservingStrategy implements GameScreenStrategy {
 				hBoxScore);
 	}
 
+	public void addController(PlayerController controller) {
+		this.controller = (ObservingStrategyController) controller;
+	}
+
 	@Override
 	public void makeCenter() {
-		currentPlayerLabelCenter.setText("Waiting for " + currentPlayer.getUsername() + " to throw.");
+		currentPlayerLabelCenter.setText("Waiting for " + currentPlayer + " to throw.");
 	}
 
-	public void makeRight() {
-
-	}
-
-	@Override
 	public void setStrategyCenter() {
-		player.getGameScreen().setCenter(vBoxDice);
+		controller.setCenter(vBoxDice);
 	}
 
 	@Override
-	public void updateField(Player currentPlayer) {
+	public void updateField(String currentPlayer, String category, int points, ArrayList<ThrownDice> thrownDice,
+			ArrayList<ThrownDice> pickedDice) {
 		this.currentPlayer = currentPlayer;
-		if (currentPlayer.getThrownDice().isEmpty()) {
-			currentPlayerLabelCenter.setText("Waiting for " + currentPlayer.getUsername() + " to throw.");
+		if (thrownDice.isEmpty()) {
+			currentPlayerLabelCenter.setText("Waiting for " + currentPlayer + " to throw.");
 			hBoxThrownDice.getChildren().clear();
 			hBoxPickedDice.getChildren().clear();
 			categoryLabel.setText("");
 		} else {
-			currentPlayerLabelCenter.setText(currentPlayer.getUsername() + " threw:");
-			loadDice(currentPlayer.getThrownDice(), hBoxThrownDice, false);
-			if (!hBoxPickedDice.getChildren().isEmpty() || !currentPlayer.getPickedDice().isEmpty()) {
-				loadDice(currentPlayer.getPickedDice(), hBoxPickedDice, true);
+			currentPlayerLabelCenter.setText(currentPlayer + " threw:");
+			loadDice(thrownDice, hBoxThrownDice, false);
+			if (!hBoxPickedDice.getChildren().isEmpty() || !pickedDice.isEmpty()) {
+				loadDice(pickedDice, hBoxPickedDice, true);
 			}
 			try {
-				if (currentPlayer.getCategoryScore() != null) {
-					categoryLabel.setText(currentPlayer.getCategoryScore().getCategory().toString() + ": "
-							+ currentPlayer.getCategoryScore().getPoints() + " points");
+				if (category != null) {
+					categoryLabel.setText(category + ": " + points + " points");
 				}
 			} catch (Exception e) {
 			}

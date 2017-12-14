@@ -1,18 +1,16 @@
 package view;
 
 import java.util.ArrayList;
+import controller.PlayerController;
+import controller.PlayingStrategyController;
 import domain.Category;
 import domain.Category.LowerSectionCategory;
 import domain.Category.UpperSectionCategory;
-import domain.Player;
 import domain.ThrownDice;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -21,20 +19,25 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 public class PlayingStrategy implements GameScreenStrategy {
+	private PlayingStrategyController controller;
 	private VBox vBoxDice;
 	private HBox hBoxThrownDice, hBoxPickedDice, hBoxCategory;
 	private Button rollDiceButton, submitButton;
-	private Player player;
+	private String player;
 	private ComboBox<Category> categoryBox;
 	private Label pointsLabel;
 	private int action;
 	private ObservableList<Category> options;
 	private Category selectedCategory;
 
-	public PlayingStrategy(Player player) {
+	public PlayingStrategy(String player) {
 		this.player = player;
 		initialize();
 		action = 0;
+	}
+
+	public void addController(PlayerController controller) {
+		this.controller = (PlayingStrategyController) controller;
 	}
 
 	public void initialize() {
@@ -54,7 +57,7 @@ public class PlayingStrategy implements GameScreenStrategy {
 	@Override
 	public void makeCenter() {
 		rollDiceButton = new Button("Roll dice");
-		rollDiceButton.setOnAction(new RollDiceHandler());
+		controller.addRollDiceHandler(rollDiceButton);
 		rollDiceButton.setAlignment(Pos.CENTER);
 
 		categoryBox = new ComboBox<Category>();
@@ -68,14 +71,14 @@ public class PlayingStrategy implements GameScreenStrategy {
 			}
 		}
 		categoryBox.getItems().addAll(options);
-		categoryBox.setOnAction(new CategoryHandler());
+		controller.addCategoryHandler(categoryBox);
 		categoryBox.setVisible(false);
 		categoryBox.setPromptText("Category");
 		pointsLabel = new Label();
 		hBoxCategory.getChildren().addAll(categoryBox, pointsLabel);
 
 		submitButton = new Button("Ok");
-		submitButton.setOnAction(new SubmitHandler());
+		controller.addSubmitHandler(submitButton);
 		submitButton.setAlignment(Pos.CENTER);
 		submitButton.setVisible(false);
 
@@ -85,11 +88,12 @@ public class PlayingStrategy implements GameScreenStrategy {
 	}
 
 	public void setStrategyCenter() {
-		player.getGameScreen().setCenter(vBoxDice);
+		controller.setCenter(vBoxDice);
 	}
 
 	@Override
-	public void updateField(Player player) {
+	public void updateField(String player, String category, int points, ArrayList<ThrownDice> thrownDice,
+			ArrayList<ThrownDice> pickedDice) {
 		this.player = player;
 		switch (action) {
 		case 0:
@@ -99,13 +103,13 @@ public class PlayingStrategy implements GameScreenStrategy {
 		case 2:
 		case 3:
 			categoryBox.setVisible(true);
-			loadDice(player.getThrownDice(), hBoxThrownDice, false);
-			if (!hBoxPickedDice.getChildren().isEmpty() || !player.getPickedDice().isEmpty()) {
-				loadDice(player.getPickedDice(), hBoxPickedDice, true);
+			loadDice(thrownDice, hBoxThrownDice, false);
+			if (!hBoxPickedDice.getChildren().isEmpty() || !pickedDice.isEmpty()) {
+				loadDice(pickedDice, hBoxPickedDice, true);
 			}
 			if (selectedCategory != null) {
 				submitButton.setVisible(true);
-				pointsLabel.setText(player.getCategoryScore().getPoints() + " points");
+				pointsLabel.setText(points + " points");
 			} else {
 				categoryBox.setPromptText("Category");
 			}
@@ -120,7 +124,7 @@ public class PlayingStrategy implements GameScreenStrategy {
 			pointsLabel.setText("");
 			categoryBox.setVisible(false);
 			categoryBox.setPromptText("Category");
-			if (!selectedCategory.equals(LowerSectionCategory.BONUS_YAHTZEE)){
+			if (!selectedCategory.equals(LowerSectionCategory.BONUS_YAHTZEE)) {
 				categoryBox.getItems().remove(categoryBox.getItems().indexOf(selectedCategory));
 			}
 			selectedCategory = null;
@@ -141,13 +145,13 @@ public class PlayingStrategy implements GameScreenStrategy {
 			button.getStyleClass().add("dice-button");
 			if (!picked) {
 				if (action < 3) {
-					button.setOnAction(new SetAsideHandler());
+					controller.addSetAsideHandler(button);
 				}
 				if (dice.isPicked()) {
 					button.setVisible(false);
 				}
 			} else if (action < 3) {
-				button.setOnAction(new ReturnHandler());
+				controller.addReturnHandler(button);
 			}
 			hbox.getChildren().add(button);
 		}
@@ -157,76 +161,64 @@ public class PlayingStrategy implements GameScreenStrategy {
 		return original.toUpperCase().replaceAll(" ", "_");
 	}
 
-	class RollDiceHandler implements EventHandler<ActionEvent> {
-		@Override
-		public void handle(ActionEvent event) {
-			action += 1;
-			player.throwDice();
-		}
+	public PlayingStrategyController getController() {
+		return controller;
 	}
 
-	class SetAsideHandler implements EventHandler<ActionEvent> {
-		@Override
-		public void handle(ActionEvent event) {
-			for (Node node : hBoxThrownDice.getChildren()) {
-				Button button = (Button) node;
-				if (button.equals(event.getSource())) {
-					player.pickDice(hBoxThrownDice.getChildren().indexOf(button));
-					break;
-				}
-			}
-		}
+	public VBox getvBoxDice() {
+		return vBoxDice;
 	}
 
-	class ReturnHandler implements EventHandler<ActionEvent> {
-		@Override
-		public void handle(ActionEvent event) {
-			for (Node node : hBoxPickedDice.getChildren()) {
-				Button button = (Button) node;
-				if (button.equals(event.getSource())) {
-					player.returnDice(hBoxPickedDice.getChildren().indexOf(button));
-					break;
-				}
-			}
-		}
+	public HBox gethBoxThrownDice() {
+		return hBoxThrownDice;
 	}
 
-	class CategoryHandler implements EventHandler<ActionEvent> {
-		@Override
-		public void handle(ActionEvent event) {
-			selectedCategory = categoryBox.getValue();
-			try {
-				player.calculateCategoryScore(categoryBox.getValue());
-			} catch (IllegalArgumentException e) {
-				player.calculateCategoryScore(categoryBox.getValue());
-			} catch (NullPointerException e) {
-				categoryBox.getSelectionModel().selectFirst();
-				try {
-					player.calculateCategoryScore(categoryBox.getValue());
-				} catch (IllegalArgumentException e2) {
-					player.calculateCategoryScore(categoryBox.getValue());
-				}
-			}
-		}
-
+	public HBox gethBoxPickedDice() {
+		return hBoxPickedDice;
 	}
 
-	class SubmitHandler implements EventHandler<ActionEvent> {
-		@Override
-		public void handle(ActionEvent event) {
-			try {
-				if (categoryBox.getValue().equals(LowerSectionCategory.YAHTZEE)) {
-					categoryBox.getItems().add(LowerSectionCategory.BONUS_YAHTZEE);
-				}
-			} catch (IllegalArgumentException e) {
-			}
-			action = 4;
-			// categoryBox.getSelectionModel().clearSelection();
-			// categoryBox.setValue(null);
-			// categoryBox.setVisible(false);
-			// categoryBox.getSelectionModel().selectFirst();
-			player.endTurn();
-		}
+	public HBox gethBoxCategory() {
+		return hBoxCategory;
+	}
+
+	public Button getRollDiceButton() {
+		return rollDiceButton;
+	}
+
+	public Button getSubmitButton() {
+		return submitButton;
+	}
+
+	public String getPlayer() {
+		return player;
+	}
+
+	public ComboBox<Category> getCategoryBox() {
+		return categoryBox;
+	}
+
+	public Label getPointsLabel() {
+		return pointsLabel;
+	}
+
+	public int getAction() {
+		return action;
+	}
+
+	public void setAction(int action) {
+		this.action = action;
+	}
+
+	public ObservableList<Category> getOptions() {
+		return options;
+	}
+
+	public Category getSelectedCategory() {
+		return selectedCategory;
+	}
+
+	public void setSelectedCategory(Category category) {
+		this.selectedCategory = category;
 	}
 
 }

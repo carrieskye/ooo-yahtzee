@@ -1,20 +1,18 @@
 package view;
 
-import java.util.Observable;
-import java.util.Observer;
+import java.util.ArrayList;
 
+import controller.ObservingStrategyController;
+import controller.PlayerController;
+import controller.PlayingStrategyController;
 import domain.Category;
 import domain.Category.LowerSectionCategory;
 import domain.Category.SpecialCategory;
 import domain.Category.UpperSectionCategory;
 import domain.CategoryScore;
-import domain.Game;
-import domain.Player;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -26,10 +24,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-public class GameScreen extends BorderPane implements Observer {
-	private Game game;
+public class GameScreen extends BorderPane {
+
+	private PlayerController controller;
 	private Stage stage;
-	private Player player;
 	private GameScreenStrategy currentStrategy, playingStrategy, observingStrategy;
 	private HBox hBoxGame, hBoxPlayer;
 	private VBox vBoxPoints;
@@ -39,17 +37,23 @@ public class GameScreen extends BorderPane implements Observer {
 	TableColumn<CategoryScore, Integer> scoreCol;
 	private TableView<CategoryScore> scoreTable;
 
-	public GameScreen(Game game, Player player, Player currentPlayer) {
-		this.player = player;
-		game.addObserver(this);
-		playingStrategy = new PlayingStrategy(player);
-		observingStrategy = new ObservingStrategy(player, currentPlayer);
-		updateStrategy(currentPlayer);
+	public GameScreen(PlayerController controller, String player, String currentPlayer) {
+		this.controller = controller;
+		this.playingStrategy = new PlayingStrategy(player);
+		this.observingStrategy = new ObservingStrategy(player, currentPlayer);
+		controller.updateStrategy();
 		makeTop();
 		makeCenter();
 		makeBottom(currentPlayer);
 		makeRight();
 		setStyles();
+	}
+
+	public void addController(PlayerController controller, PlayingStrategyController playingController,
+			ObservingStrategyController observingController) {
+		this.controller = controller;
+		playingStrategy.addController(playingController);
+		observingStrategy.addController(observingController);
 	}
 
 	public void makeTop() {
@@ -63,11 +67,11 @@ public class GameScreen extends BorderPane implements Observer {
 		vBoxPoints = new VBox(5);
 	}
 
-	public void makeBottom(Player currentPlayer) {
+	public void makeBottom(String currentPlayer) {
 		hBoxPlayer = new HBox(20);
-		currentPlayerLabelBottom = new Label(currentPlayer.getUsername() + " playing");
+		currentPlayerLabelBottom = new Label(currentPlayer + " playing");
 		surrenderButton = new Button("Surrender");
-		surrenderButton.setOnAction(new SurrenderButtonHandler());
+		controller.addSurrenderButtonHandler(surrenderButton);
 		hBoxPlayer.getChildren().add(currentPlayerLabelBottom);
 		this.setBottom(hBoxPlayer);
 	}
@@ -123,19 +127,11 @@ public class GameScreen extends BorderPane implements Observer {
 		observingStrategy.makeCenter();
 		currentStrategy.setStrategyCenter();
 		this.setRight(vBoxPoints);
-		player.getGameScreen().setMargin(vBoxPoints, new Insets(20));
+		this.setMargin(vBoxPoints, new Insets(20));
 	}
 
-	public void updateStrategy(Player currentPlayer) {
-		if (player.equals(currentPlayer)) {
-			currentStrategy = playingStrategy;
-		} else {
-			currentStrategy = observingStrategy;
-		}
-	}
-
-	public void updateScoreTable() {
-		for (CategoryScore currentCategoryScore : player.getCategoryScoreList()) {
+	public void updateScoreTable(ArrayList<CategoryScore> categories, ArrayList<CategoryScore> totals) {
+		for (CategoryScore currentCategoryScore : categories) {
 			if (currentCategoryScore != null) {
 				for (CategoryScore categoryScore : scoreTable.getItems()) {
 					if (categoryScore.getCategory().equals(currentCategoryScore.getCategory())) {
@@ -145,7 +141,7 @@ public class GameScreen extends BorderPane implements Observer {
 			}
 		}
 
-		for (CategoryScore totalScore : player.getTotalScoresList()) {
+		for (CategoryScore totalScore : totals) {
 			if (totalScore != null) {
 				for (CategoryScore categoryScore : scoreTable.getItems()) {
 					if (categoryScore.getCategory().equals(totalScore.getCategory())) {
@@ -168,22 +164,24 @@ public class GameScreen extends BorderPane implements Observer {
 		this.stage = stage;
 	}
 
-	@Override
-	public void update(Observable o, Object arg) {
-		this.game = (Game) o;
-		currentPlayerLabelBottom.setText(game.getCurrentPlayer().getUsername() + " playing");
-		updateStrategy(game.getCurrentPlayer());
-		updateScoreTable();
-		currentStrategy.setStrategyCenter();
-		currentStrategy.updateField(game.getCurrentPlayer());
+	public void setCurrentStrategy(GameScreenStrategy currentStrategy) {
+		this.currentStrategy = currentStrategy;
 	}
 
-	class SurrenderButtonHandler implements EventHandler<ActionEvent> {
-		@Override
-		public void handle(ActionEvent event) {
-			player.surrender();
-			endGame();
-		}
+	public GameScreenStrategy getPlayingStrategy() {
+		return this.playingStrategy;
+	}
+
+	public GameScreenStrategy getCurrentStrategy() {
+		return this.currentStrategy;
+	}
+
+	public GameScreenStrategy getObservingStrategy() {
+		return this.observingStrategy;
+	}
+
+	public Label getCurrentPlayerLabelBottom() {
+		return this.currentPlayerLabelBottom;
 	}
 
 }

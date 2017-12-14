@@ -1,6 +1,9 @@
 package view;
 
-import domain.Player;
+import java.util.ArrayList;
+
+import controller.PlayerController;
+import domain.ThrownDice;
 
 public interface GameScreenStrategy {
 	void initialize();
@@ -9,6 +12,9 @@ public interface GameScreenStrategy {
 
 	void makeCenter();
 
-	void updateField(Player currentPlayer);
+	void updateField(String currentPlayer, String category, int points, ArrayList<ThrownDice> thrownDice,
+			ArrayList<ThrownDice> pickedDice);
+
+	void addController(PlayerController playingController);
 
 }

@@ -1,22 +1,17 @@
 package domain;
 
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.Random;
 
+import controller.PlayerController;
 import domain.Category.LowerSectionCategory;
 import domain.Category.SpecialCategory;
 import domain.Category.UpperSectionCategory;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.DialogPane;
-import view.GameScreen;
 
 public class Player {
+	private PlayerController controller;
 	private Game game;
 	private String username;
-	private GameScreen screen;
 	private ArrayList<ThrownDice> thrownDice;
 	private ArrayList<ThrownDice> pickedDice;
 	private ArrayList<CategoryScore> categoryScores;
@@ -34,12 +29,6 @@ public class Player {
 		this.gameOver = false;
 		this.surrendered = false;
 
-		if (game.getCurrentPlayer() == null) {
-			screen = new GameScreen(game, this, this);
-		} else {
-			screen = new GameScreen(game, this, game.getCurrentPlayer());
-		}
-
 		thrownDice = new ArrayList<>();
 		pickedDice = new ArrayList<>();
 		categoryScores = new ArrayList<>();
@@ -49,6 +38,22 @@ public class Player {
 		upperSectionTotal = new CategoryScore(SpecialCategory.UPPER_SECTION_TOTAL);
 		lowerSectionTotal = new CategoryScore(SpecialCategory.LOWER_SECTION_TOTAL);
 		grandTotal = new CategoryScore(SpecialCategory.GRAND_TOTAL);
+	}
+
+	public void addController(PlayerController controller) {
+		this.controller = controller;
+	}
+
+	public void startGame() {
+		controller.startGame();
+	}
+
+	public void endGame() {
+		controller.endGame();
+	}
+
+	public boolean newGame(Player surrenderedPlayer) {
+		return controller.newGame(surrenderedPlayer);
 	}
 
 	public void throwDice() {
@@ -192,10 +197,6 @@ public class Player {
 		return this.username;
 	}
 
-	public GameScreen getGameScreen() {
-		return screen;
-	}
-
 	public ArrayList<ThrownDice> getThrownDice() {
 		return this.thrownDice;
 	}
@@ -234,31 +235,4 @@ public class Player {
 		return this.grandTotal.getPoints();
 	}
 
-	public boolean endAlert(Player player) {
-		Alert alert = new Alert(AlertType.CONFIRMATION);
-		DialogPane dialogPane = alert.getDialogPane();
-		dialogPane.getStylesheets().add(getClass().getResource("../application/application.css").toExternalForm());
-		dialogPane.getStyleClass().add("alert");
-		alert.setTitle("Yahtzee");
-		String header = "";
-		if (player != null) {
-			header = player.getUsername() + " surrendered: ";
-		}
-		if (game.getWinner().size() == 1) {
-			header += game.getWinner().get(0).getUsername() + " won with " + game.getWinner().get(0).getGrandTotal()
-					+ " points!";
-		} else if (game.getWinner().size() == 2) {
-			header += game.getWinner().get(0).getUsername() + " and " + game.getWinner().get(1).getUsername()
-					+ " won with " + game.getWinner().get(0).getGrandTotal() + " points!";
-		}
-		alert.setHeaderText(header);
-		alert.setContentText("Want to play again?");
-
-		Optional<ButtonType> result = alert.showAndWait();
-		if (result.get() == ButtonType.OK) {
-			return true;
-		} else {
-			return false;
-		}
-	}
 }

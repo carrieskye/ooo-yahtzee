@@ -188,6 +188,8 @@ public class CategoryScore {
 	public ArrayList<Dice> getDice() {
 		return this.pickedDice;
 	}
+	
+
 
 	public CategoryScore updateTotals(CategoryScore categoryScore) {
 		if (!this.getCategory().equals(LowerSectionCategory.BONUS_YAHTZEE)) {
