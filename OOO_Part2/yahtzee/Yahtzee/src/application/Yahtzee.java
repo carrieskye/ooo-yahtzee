@@ -14,12 +14,13 @@ public class Yahtzee {
 		try {
 			game = Game.getInstance();
 			game.reset();
-			GameController startController = new GameController(this, stage, game);
+			GameController gameController = new GameController(this, stage, game);
+			game.setController(gameController);
 			if (players != null) {
 				for (Player oldPlayer : players) {
 					Player player = new Player(game, oldPlayer.getUsername());
 					game.registerPlayer(player);
-					startController.startPlayerScreen(player, "../application/application.css");
+					gameController.startPlayerScreen(player, "../application/application.css");
 				}
 			}
 		} catch (Exception e) {

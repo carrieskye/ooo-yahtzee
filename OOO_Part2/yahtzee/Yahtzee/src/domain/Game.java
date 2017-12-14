@@ -6,15 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import application.Yahtzee;
-
 import java.util.Observable;
-
-import javafx.stage.Stage;
-import view.GameScreen;
+import controller.GameController;
 
 public class Game extends Observable {
+	private GameController controller;
 	private List<Player> players;
 	private static Game uniqueInstance = new Game();
 	private Player currentPlayer;
@@ -25,6 +21,10 @@ public class Game extends Observable {
 
 	public static Game getInstance() {
 		return uniqueInstance;
+	}
+
+	public void setController(GameController controller) {
+		this.controller = controller;
 	}
 
 	public List<Player> getPlayers() {
@@ -70,14 +70,6 @@ public class Game extends Observable {
 		throw new DomainException("No player with this username.");
 	}
 
-	public List<GameScreen> getGameScreens() {
-		List<GameScreen> gamescreens = new ArrayList<>();
-		for (Player player : players) {
-			gamescreens.add((player.getGameScreen()));
-		}
-		return gamescreens;
-	}
-
 	public Player getCurrentPlayer() {
 		return currentPlayer;
 	}
@@ -93,7 +85,7 @@ public class Game extends Observable {
 				}
 				i++;
 			}
-			gameIsOver();
+			endGame();
 		} else {
 			this.currentPlayer = currentPlayer;
 		}
@@ -113,9 +105,11 @@ public class Game extends Observable {
 	}
 
 	public void startGame() {
-		for (Player player : players) {
-			player.getGameScreen().start();
-		}
+		this.controller.startGame();
+	}
+
+	public void endGame() {
+		this.controller.endGame();
 	}
 
 	public List<Player> getWinningPlayers() {
@@ -133,36 +127,9 @@ public class Game extends Observable {
 		return winningPlayers;
 	}
 
-	public void gameIsOver() {
-		for (Player player : players) {
-			player.getGameScreen().endGame();
-		}
-		endGame();
-	}
-
 	public void somethingChanged() {
 		setChanged();
 		notifyObservers();
-	}
-
-	public void endGame() {
-		Player surrenderedPlayer = null;
-		for (Player player : players) {
-			player.getGameScreen().getStage().close();
-			if (player.surrendered()) {
-				surrenderedPlayer = player;
-			}
-		}
-		ArrayList<Player> newPlayers = new ArrayList<>();
-		for (Player player : players) {
-			if (player.endAlert(surrenderedPlayer)) {
-				newPlayers.add(player);
-			}
-		}
-		if (!newPlayers.isEmpty()) {
-			new Yahtzee(new Stage(), newPlayers);
-		}
-
 	}
 
 	public ArrayList<Player> getWinner() {

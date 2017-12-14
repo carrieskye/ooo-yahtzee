@@ -1,5 +1,7 @@
 package controller;
 
+import java.util.ArrayList;
+
 import application.Yahtzee;
 import domain.DomainException;
 import domain.Game;
@@ -60,6 +62,37 @@ public class GameController {
 		button.setOnAction(new AddPlayerHandler());
 	}
 	
+	public void startGame(){
+		for (Player player : this.game.getPlayers()) {
+			player.getGameScreen().start();
+		}
+	}
+	public void gameIsOver() {
+		for (Player player : this.game.getPlayers()) {
+			player.getGameScreen().endGame();
+		}
+		endGame();
+	}
+
+	public void endGame() {
+		Player surrenderedPlayer = null;
+		for (Player player : this.game.getPlayers()) {
+			player.getGameScreen().getStage().close();
+			if (player.surrendered()) {
+				surrenderedPlayer = player;
+			}
+		}
+		ArrayList<Player> newPlayers = new ArrayList<>();
+		for (Player player : this.game.getPlayers()) {
+			if (player.endAlert(surrenderedPlayer)) {
+				newPlayers.add(player);
+			}
+		}
+		if (!newPlayers.isEmpty()) {
+			new Yahtzee(new Stage(), newPlayers);
+		}
+
+	}
 
 	class AddPlayerHandler implements EventHandler<ActionEvent> {
 		@Override
