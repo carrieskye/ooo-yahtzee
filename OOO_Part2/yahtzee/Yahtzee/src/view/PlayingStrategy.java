@@ -1,6 +1,7 @@
 package view;
 
 import java.util.ArrayList;
+
 import controller.PlayerController;
 import controller.PlayingStrategyController;
 import domain.Category;
