@@ -15,8 +15,7 @@ public class Player {
 	private ArrayList<ThrownDice> thrownDice;
 	private ArrayList<ThrownDice> pickedDice;
 	private ArrayList<CategoryScore> categoryScores;
-	private CategoryScore currentCategory, upperSectionScore, upperSectionBonus, upperSectionTotal, lowerSectionTotal,
-			grandTotal;
+	private CategoryScore upperSectionScore, upperSectionBonus, upperSectionTotal, lowerSectionTotal, grandTotal;
 	private int yahtzeeBonus, turn;
 	private static final int MAX_TURN = 13;
 	private boolean gameOver, surrendered;
@@ -29,9 +28,21 @@ public class Player {
 		this.gameOver = false;
 		this.surrendered = false;
 
+		initializeCategoryScores();
+	}
+
+	public void initializeCategoryScores() {
 		thrownDice = new ArrayList<>();
 		pickedDice = new ArrayList<>();
+
 		categoryScores = new ArrayList<>();
+		for (Category category : UpperSectionCategory.values()) {
+			categoryScores.add(new CategoryScore(category));
+		}
+		for (Category category : LowerSectionCategory.values()) {
+			categoryScores.add(new CategoryScore(category));
+		}
+		categoryScores.add(new CategoryScore(LowerSectionCategory.BONUS_YAHTZEE));
 
 		upperSectionScore = new CategoryScore(SpecialCategory.UPPER_SECTION_SCORE);
 		upperSectionBonus = new CategoryScore(SpecialCategory.UPPER_SECTION_BONUS);
@@ -65,13 +76,19 @@ public class Player {
 			for (ThrownDice dice : thrownDice) {
 				if (!dice.isPicked()) {
 					thrownDice.set(thrownDice.indexOf(dice), getRandomDice());
-					if (currentCategory != null && !currentCategory.equals(null)) {
-						calculateCategoryScore(currentCategory.getCategory());
-					}
 				}
 			}
 		}
+		calculateCategories();
 		game.showDice();
+	}
+
+	public void calculateCategories() {
+		for (CategoryScore categoryScore : categoryScores) {
+			if (!categoryScore.isPicked()) {
+				categoryScore.setDice(thrownDice());
+			}
+		}
 	}
 
 	public ThrownDice getRandomDice() {
@@ -111,8 +128,9 @@ public class Player {
 		game.showDice();
 	}
 
-	public void endTurn() {
-		if (currentCategory.getCategory().equals(LowerSectionCategory.BONUS_YAHTZEE)) {
+	public void endTurn(Category category) {
+		CategoryScore currentCategory = getCategoryScore(category);
+		if (category.equals(LowerSectionCategory.BONUS_YAHTZEE)) {
 			if (yahtzeeBonus >= 1) {
 				for (CategoryScore categoryScore : categoryScores) {
 					if (categoryScore.getCategory().equals(LowerSectionCategory.BONUS_YAHTZEE)) {
@@ -120,25 +138,25 @@ public class Player {
 					}
 				}
 			} else {
-				categoryScores.add(currentCategory);
+				getCategoryScore(category).setPicked(true);
 			}
 			yahtzeeBonus += 1;
 		} else {
-			if (!currentCategory.getCategory().equals(LowerSectionCategory.YAHTZEE)) {
+			if (!category.equals(LowerSectionCategory.BONUS_YAHTZEE)) {
 				turn += 1;
 			}
-			categoryScores.add(currentCategory);
+			getCategoryScore(category).setPicked(true);
 		}
-		updateTotals();
+		clearCategories();
+		updateTotals(currentCategory);
 		thrownDice.clear();
 		pickedDice.clear();
-		currentCategory = null;
 		checkGameOver();
 		game.showDice();
 		game.updateCurrentPlayer();
 	}
 
-	public void calculateCategoryScore(Category category) {
+	public ArrayList<Dice> thrownDice() {
 		ArrayList<Dice> categoryDice = new ArrayList<>();
 		for (ThrownDice dice : pickedDice) {
 			categoryDice.add(dice.getDice());
@@ -148,12 +166,18 @@ public class Player {
 				categoryDice.add(dice.getDice());
 			}
 		}
-
-		this.currentCategory = new CategoryScore(category, categoryDice);
-		game.showDice();
+		return categoryDice;
 	}
 
-	public void updateTotals() {
+	public void clearCategories() {
+		for (CategoryScore categoryScore : categoryScores) {
+			if (!categoryScore.isPicked()) {
+				categoryScore.reset();
+			}
+		}
+	}
+
+	public void updateTotals(CategoryScore currentCategory) {
 		if (currentCategory.getCategory() instanceof UpperSectionCategory) {
 			currentCategory.updateTotals(upperSectionScore);
 			currentCategory.updateTotals(upperSectionTotal);
@@ -206,10 +230,6 @@ public class Player {
 		return this.pickedDice;
 	}
 
-	public CategoryScore getCategoryScore() {
-		return this.currentCategory;
-	}
-
 	public ArrayList<CategoryScore> getCategoryScoreList() {
 		return this.categoryScores;
 	}
@@ -224,6 +244,15 @@ public class Player {
 		return totalScores;
 	}
 
+	public CategoryScore getCategoryScore(Category category) {
+		for (CategoryScore categoryScore : categoryScores) {
+			if (categoryScore.getCategory().equals(category)) {
+				return categoryScore;
+			}
+		}
+		return null;
+	}
+
 	public boolean isGameOver() {
 		return this.gameOver;
 	}
@@ -235,8 +264,8 @@ public class Player {
 	public int getGrandTotal() {
 		return this.grandTotal.getPoints();
 	}
-	
-	public int getTurn(){
+
+	public int getTurn() {
 		return this.turn;
 	}
 

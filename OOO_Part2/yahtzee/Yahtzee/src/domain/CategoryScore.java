@@ -12,11 +12,17 @@ public class CategoryScore {
 	private ArrayList<Dice> pickedDice;
 	private Category category;
 	private int points;
-	private boolean picked;
+	private boolean playing, picked;
 
 	public CategoryScore(Category category) {
 		this.category = category;
-		this.points = 0;
+		if (category instanceof SpecialCategory) {
+			this.points = 0;
+		} else {
+			this.points = -1;
+		}
+		this.playing = false;
+		this.picked = false;
 	}
 
 	public CategoryScore(Category category, ArrayList<Dice> pickedDice) {
@@ -176,9 +182,9 @@ public class CategoryScore {
 		return this.category;
 	}
 
-	public static CategoryScore getEmptyCategoryScore(Category category) {
+	public static CategoryScore getEmptyCategoryScore(Category category, int initialScore) {
 		CategoryScore categoryScore = new CategoryScore(category);
-		categoryScore.setPoints(0);
+		categoryScore.setPoints(initialScore);
 		return categoryScore;
 	}
 
@@ -189,8 +195,6 @@ public class CategoryScore {
 	public ArrayList<Dice> getDice() {
 		return this.pickedDice;
 	}
-	
-
 
 	public CategoryScore updateTotals(CategoryScore categoryScore) {
 		if (!this.getCategory().equals(LowerSectionCategory.BONUS_YAHTZEE)) {
@@ -206,8 +210,8 @@ public class CategoryScore {
 			categoryScore.setPoints(35);
 		} else if (categoryScore.getCategory().equals(SpecialCategory.UPPER_SECTION_TOTAL)) {
 			categoryScore.setPoints(categoryScore.getPoints() + 35);
-		} else if (categoryScore.getCategory().equals(SpecialCategory.GRAND_TOTAL)){
-			categoryScore.setPoints(categoryScore.getPoints()+35);
+		} else if (categoryScore.getCategory().equals(SpecialCategory.GRAND_TOTAL)) {
+			categoryScore.setPoints(categoryScore.getPoints() + 35);
 		}
 		return categoryScore;
 
@@ -218,6 +222,10 @@ public class CategoryScore {
 		setPoints((index + 1) * 100);
 	}
 
+	public void reset() {
+		setPoints(-1);
+	}
+
 	public boolean isPicked() {
 		return picked;
 	}
@@ -225,4 +233,13 @@ public class CategoryScore {
 	public void setPicked(boolean picked) {
 		this.picked = picked;
 	}
+
+	public boolean isPlaying() {
+		return playing;
+	}
+
+	public void setPlaying(boolean playing) {
+		this.playing = playing;
+	}
+
 }
