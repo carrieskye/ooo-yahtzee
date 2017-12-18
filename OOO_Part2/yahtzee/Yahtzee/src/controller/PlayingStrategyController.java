@@ -15,11 +15,13 @@ import view.PlayingStrategy;
 
 public class PlayingStrategyController extends PlayerController {
 	private PlayingStrategy strategy;
+	private boolean yahtzee;
 
 	public PlayingStrategyController(Game game, Player player, GameScreen screen, GameScreenStrategy strategy) {
 		super(game, player, screen);
 		this.strategy = (PlayingStrategy) strategy;
 		this.screen = screen;
+		yahtzee = false;
 	}
 
 	public void addRollDiceHandler(Button button) {
@@ -33,13 +35,17 @@ public class PlayingStrategyController extends PlayerController {
 	public void addReturnHandler(Button button) {
 		button.setOnAction(new ReturnHandler());
 	}
-	
+
 	public void addCategoryHandler(Button button, ButtonCell buttoncell) {
 		button.setOnAction(new CategoryHandler(buttoncell));
 	}
 
 	public void setCenter(VBox vbox) {
 		screen.setCenter(vbox);
+	}
+	
+	public Boolean getYahtzee(){
+		return this.yahtzee;
 	}
 
 	class RollDiceHandler implements EventHandler<ActionEvent> {
@@ -88,7 +94,7 @@ public class PlayingStrategyController extends PlayerController {
 			this.buttonCell.getCategory();
 			buttonCell.setPicked(true);
 			if (buttonCell.getCategory().equals(LowerSectionCategory.YAHTZEE)) {
-				buttonCell.setYahtzee(true);
+				yahtzee = true;
 			}
 			strategy.setAction(4);
 			player.endTurn(buttonCell.getCategory());

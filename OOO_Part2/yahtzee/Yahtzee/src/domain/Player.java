@@ -42,7 +42,6 @@ public class Player {
 		for (Category category : LowerSectionCategory.values()) {
 			categoryScores.add(new CategoryScore(category));
 		}
-		categoryScores.add(new CategoryScore(LowerSectionCategory.BONUS_YAHTZEE));
 
 		upperSectionScore = new CategoryScore(SpecialCategory.UPPER_SECTION_SCORE);
 		upperSectionBonus = new CategoryScore(SpecialCategory.UPPER_SECTION_BONUS);
@@ -102,9 +101,9 @@ public class Player {
 		case 3:
 			return new ThrownDice(Dice.THREE, false);
 		case 4:
-			return new ThrownDice(Dice.FOUR, false);
+			return new ThrownDice(Dice.SIX, false);
 		case 5:
-			return new ThrownDice(Dice.FIVE, false);
+			return new ThrownDice(Dice.SIX, false);
 		case 6:
 			return new ThrownDice(Dice.SIX, false);
 		default:

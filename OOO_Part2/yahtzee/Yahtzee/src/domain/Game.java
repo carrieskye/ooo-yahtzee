@@ -88,6 +88,7 @@ public class Game extends Observable {
 			endGame();
 		} else {
 			this.currentPlayer = currentPlayer;
+			somethingChanged();
 		}
 	}
 
@@ -97,7 +98,6 @@ public class Game extends Observable {
 		} else {
 			setCurrentPlayer(players.get(players.indexOf(currentPlayer) + 1));
 		}
-		somethingChanged();
 	}
 
 	public void showDice() {

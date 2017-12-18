@@ -13,7 +13,7 @@ public class ButtonCell extends TableCell<CategoryScore, Integer> {
 	private Category category;
 	private Button pointsButton;
 	private PlayingStrategyController controller;
-	private boolean picked, yahtzee;
+	private boolean picked;
 
 	public ButtonCell(PlayingStrategyController controller) {
 		this.controller = controller;
@@ -22,7 +22,6 @@ public class ButtonCell extends TableCell<CategoryScore, Integer> {
 		this.controller.addCategoryHandler(pointsButton, this);
 		textOnlyField("0");
 		this.picked = false;
-		this.yahtzee = false;
 	}
 
 	@Override
@@ -39,7 +38,7 @@ public class ButtonCell extends TableCell<CategoryScore, Integer> {
 			} else if (Integer.valueOf(value) == -1) {
 				textOnlyField("");
 			} else {
-				if (category.equals(LowerSectionCategory.BONUS_YAHTZEE) && !yahtzee) {
+				if (category.equals(LowerSectionCategory.BONUS_YAHTZEE) && !controller.getYahtzee()) {
 					textOnlyField("");
 				} else if (category instanceof SpecialCategory || picked) {
 					textOnlyField(value.toString());
@@ -109,8 +108,5 @@ public class ButtonCell extends TableCell<CategoryScore, Integer> {
 		this.picked = picked;
 	}
 
-	public void setYahtzee(boolean yahtzee) {
-		this.yahtzee = yahtzee;
-	}
 
 }
