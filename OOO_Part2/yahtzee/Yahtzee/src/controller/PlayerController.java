@@ -11,11 +11,12 @@ import domain.ThrownDice;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.DialogPane;
-import view.GameScreen;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.DialogPane;
+import view.ButtonCell;
+import view.GameScreen;
 
 public class PlayerController implements Observer {
 	protected Game game;
@@ -79,25 +80,20 @@ public class PlayerController implements Observer {
 	@Override
 	public void update(Observable o, Object arg) {
 		this.game = (Game) o;
-		screen.getCurrentPlayerLabelBottom().setText(game.getCurrentPlayer().getUsername() + " playing, beurt = " + player.getTurn());
+		screen.getCurrentPlayerLabelBottom()
+				.setText(game.getCurrentPlayer().getUsername() + " playing");
 		updateStrategy();
 		screen.updateScoreTable(player.getCategoryScoreList(), player.getTotalScoresList());
 		screen.getCurrentStrategy().setStrategyCenter();
-		String category = null;
-		int points = -1;
 		ArrayList<ThrownDice> thrownDice = new ArrayList<>();
 		ArrayList<ThrownDice> pickedDice = new ArrayList<>();
-		if (game.getCurrentPlayer().getCategoryScore() != null) {
-			category = game.getCurrentPlayer().getCategoryScore().getCategory().toString();
-			points = game.getCurrentPlayer().getCategoryScore().getPoints();
-		}
 		if (!game.getCurrentPlayer().getThrownDice().isEmpty()) {
 			thrownDice = game.getCurrentPlayer().getThrownDice();
 		}
 		if (!game.getCurrentPlayer().getPickedDice().isEmpty()) {
 			pickedDice = game.getCurrentPlayer().getPickedDice();
 		}
-		screen.getCurrentStrategy().updateField(game.getCurrentPlayer().getUsername(), category, points, thrownDice,
+		screen.getCurrentStrategy().updateField(game.getCurrentPlayer().getUsername(), thrownDice,
 				pickedDice);
 	}
 
@@ -107,6 +103,10 @@ public class PlayerController implements Observer {
 		} else {
 			screen.setObservingStrategy();
 		}
+	}
+
+	public ButtonCell makeButtonCell() {
+		return new ButtonCell(playingController);
 	}
 
 	public void addSurrenderButtonHandler(Button button) {

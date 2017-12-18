@@ -1,15 +1,14 @@
 package controller;
 
+import domain.Category.LowerSectionCategory;
 import domain.Game;
 import domain.Player;
-import domain.Category;
-import domain.Category.LowerSectionCategory;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.layout.VBox;
+import view.ButtonCell;
 import view.GameScreen;
 import view.GameScreenStrategy;
 import view.PlayingStrategy;
@@ -34,13 +33,9 @@ public class PlayingStrategyController extends PlayerController {
 	public void addReturnHandler(Button button) {
 		button.setOnAction(new ReturnHandler());
 	}
-
-	public void addCategoryHandler(ComboBox<Category> categoryBox) {
-		categoryBox.setOnAction(new CategoryHandler());
-	}
-
-	public void addSubmitHandler(Button button) {
-		button.setOnAction(new SubmitHandler());
+	
+	public void addCategoryHandler(Button button, ButtonCell buttoncell) {
+		button.setOnAction(new CategoryHandler(buttoncell));
 	}
 
 	public void setCenter(VBox vbox) {
@@ -82,37 +77,22 @@ public class PlayingStrategyController extends PlayerController {
 	}
 
 	class CategoryHandler implements EventHandler<ActionEvent> {
-		@Override
-		public void handle(ActionEvent event) {
-			strategy.setSelectedCategory(strategy.getCategoryBox().getValue());
-			try {
-				player.calculateCategoryScore(strategy.getCategoryBox().getValue());
-			} catch (IllegalArgumentException e) {
-				player.calculateCategoryScore(strategy.getCategoryBox().getValue());
-			} catch (NullPointerException e) {
-				strategy.getCategoryBox().getSelectionModel().selectFirst();
-				try {
-					player.calculateCategoryScore(strategy.getCategoryBox().getValue());
-				} catch (IllegalArgumentException e2) {
-					player.calculateCategoryScore(strategy.getCategoryBox().getValue());
-				}
-			}
+		private ButtonCell buttonCell;
+
+		public CategoryHandler(ButtonCell buttonCell) {
+			this.buttonCell = buttonCell;
 		}
 
-	}
-
-	class SubmitHandler implements EventHandler<ActionEvent> {
 		@Override
 		public void handle(ActionEvent event) {
-			try {
-				if (strategy.getCategoryBox().getValue().equals(LowerSectionCategory.YAHTZEE)
-						&& player.getCategoryScore().getPoints() != 0) {
-					strategy.getCategoryBox().getItems().add(LowerSectionCategory.BONUS_YAHTZEE);
-				}
-			} catch (IllegalArgumentException e) {
+			this.buttonCell.getCategory();
+			buttonCell.setPicked(true);
+			if (buttonCell.getCategory().equals(LowerSectionCategory.YAHTZEE)) {
+				buttonCell.setYahtzee(true);
 			}
 			strategy.setAction(4);
-			player.endTurn();
+			player.endTurn(buttonCell.getCategory());
+
 		}
 	}
 

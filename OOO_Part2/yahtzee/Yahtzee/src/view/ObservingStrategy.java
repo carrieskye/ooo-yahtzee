@@ -16,8 +16,8 @@ import javafx.scene.layout.VBox;
 public class ObservingStrategy implements GameScreenStrategy {
 	private ObservingStrategyController controller;
 	private VBox vBoxDice;
-	private HBox hBoxThrownDice, hBoxPickedDice, hBoxScore;
-	private Label currentPlayerLabelCenter, categoryLabel;
+	private HBox hBoxThrownDice, hBoxPickedDice;
+	private Label currentPlayerLabelCenter;
 	private String currentPlayer;
 
 	public ObservingStrategy(String player, String initialCurrentPlayer) {
@@ -29,16 +29,12 @@ public class ObservingStrategy implements GameScreenStrategy {
 		vBoxDice = new VBox(5);
 		hBoxThrownDice = new HBox(5);
 		hBoxPickedDice = new HBox(5);
-		hBoxScore = new HBox(5);
 		hBoxThrownDice.getStyleClass().add("dice-images");
 		hBoxPickedDice.getStyleClass().add("dice-images");
-		hBoxScore.getStyleClass().add("dice-images");
 		currentPlayerLabelCenter = new Label();
-		categoryLabel = new Label();
 		vBoxDice.setAlignment(Pos.TOP_CENTER);
 		vBoxDice.setPadding(new Insets(15, 0, 0, 0));
-		vBoxDice.getChildren().addAll(currentPlayerLabelCenter, hBoxThrownDice, hBoxPickedDice, categoryLabel,
-				hBoxScore);
+		vBoxDice.getChildren().addAll(currentPlayerLabelCenter, hBoxThrownDice, hBoxPickedDice);
 	}
 
 	public void addController(PlayerController controller) {
@@ -55,25 +51,17 @@ public class ObservingStrategy implements GameScreenStrategy {
 	}
 
 	@Override
-	public void updateField(String currentPlayer, String category, int points, ArrayList<ThrownDice> thrownDice,
-			ArrayList<ThrownDice> pickedDice) {
+	public void updateField(String currentPlayer, ArrayList<ThrownDice> thrownDice, ArrayList<ThrownDice> pickedDice) {
 		this.currentPlayer = currentPlayer;
 		if (thrownDice.isEmpty()) {
 			currentPlayerLabelCenter.setText("Waiting for " + currentPlayer + " to throw.");
 			hBoxThrownDice.getChildren().clear();
 			hBoxPickedDice.getChildren().clear();
-			categoryLabel.setText("");
 		} else {
 			currentPlayerLabelCenter.setText(currentPlayer + " threw:");
 			loadDice(thrownDice, hBoxThrownDice, false);
 			if (!hBoxPickedDice.getChildren().isEmpty() || !pickedDice.isEmpty()) {
 				loadDice(pickedDice, hBoxPickedDice, true);
-			}
-			try {
-				if (category != null) {
-					categoryLabel.setText(category + ": " + points + " points");
-				}
-			} catch (Exception e) {
 			}
 		}
 	}

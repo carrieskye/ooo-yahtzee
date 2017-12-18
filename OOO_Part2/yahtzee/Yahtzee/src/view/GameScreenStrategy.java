@@ -12,8 +12,7 @@ public interface GameScreenStrategy {
 
 	void makeCenter();
 
-	void updateField(String currentPlayer, String category, int points, ArrayList<ThrownDice> thrownDice,
-			ArrayList<ThrownDice> pickedDice);
+	void updateField(String currentPlayer, ArrayList<ThrownDice> thrownDice, ArrayList<ThrownDice> pickedDice);
 
 	void addController(PlayerController playingController);
 

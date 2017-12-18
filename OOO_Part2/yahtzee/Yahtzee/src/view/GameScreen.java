@@ -11,11 +11,14 @@ import domain.Category.SpecialCategory;
 import domain.Category.UpperSectionCategory;
 import domain.CategoryScore;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -23,6 +26,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 public class GameScreen extends BorderPane {
 	private String currentPlayer;
@@ -36,6 +40,11 @@ public class GameScreen extends BorderPane {
 	TableColumn<CategoryScore, String> categoryCol;
 	TableColumn<CategoryScore, Integer> scoreCol;
 	private TableView<CategoryScore> scoreTable;
+	private ArrayList<ButtonCell> buttonCells;
+
+	public TableView<CategoryScore> getScoreTable() {
+		return scoreTable;
+	}
 
 	public GameScreen(String player, String currentPlayer) {
 		this.currentPlayer = currentPlayer;
@@ -89,6 +98,28 @@ public class GameScreen extends BorderPane {
 		categoryCol.setMinWidth(100);
 		scoreCol = new TableColumn<CategoryScore, Integer>("Score");
 		scoreCol.getStyleClass().add("score-column");
+		categoryCol.setSortable(false);
+		buttonCells = new ArrayList<>();
+		scoreCol.setCellValueFactory(
+				new Callback<TableColumn.CellDataFeatures<CategoryScore, Integer>, ObservableValue<Integer>>() {
+
+					@Override
+					public ObservableValue<Integer> call(TableColumn.CellDataFeatures<CategoryScore, Integer> p) {
+						return new SimpleIntegerProperty(p.getValue().getPoints()).asObject();
+					}
+				});
+
+		scoreCol.setCellFactory(new Callback<TableColumn<CategoryScore, Integer>, TableCell<CategoryScore, Integer>>() {
+
+			@Override
+			public TableCell<CategoryScore, Integer> call(TableColumn<CategoryScore, Integer> p) {
+				ButtonCell buttonCell = controller.makeButtonCell();
+				buttonCells.add(buttonCell);
+				return buttonCell;
+
+			}
+
+		});
 		scoreTable.getColumns().add(categoryCol);
 		scoreTable.getColumns().add(scoreCol);
 		ObservableList<CategoryScore> emptyCategoryScores = makeCategories();
@@ -103,18 +134,21 @@ public class GameScreen extends BorderPane {
 
 	public ObservableList<CategoryScore> makeCategories() {
 		ObservableList<CategoryScore> emptyCategoryScores = FXCollections.observableArrayList();
+		int i = -2;
 		for (Category category : UpperSectionCategory.values()) {
-			emptyCategoryScores.add(CategoryScore.getEmptyCategoryScore(category));
+			emptyCategoryScores.add(CategoryScore.getEmptyCategoryScore(category, i));
+			i -= 1;
 		}
-		emptyCategoryScores.add(CategoryScore.getEmptyCategoryScore(SpecialCategory.UPPER_SECTION_SCORE));
-		emptyCategoryScores.add(CategoryScore.getEmptyCategoryScore(SpecialCategory.UPPER_SECTION_BONUS));
-		emptyCategoryScores.add(CategoryScore.getEmptyCategoryScore(SpecialCategory.UPPER_SECTION_TOTAL));
+		emptyCategoryScores.add(CategoryScore.getEmptyCategoryScore(SpecialCategory.UPPER_SECTION_SCORE, i));
+		emptyCategoryScores.add(CategoryScore.getEmptyCategoryScore(SpecialCategory.UPPER_SECTION_BONUS, i - 1));
+		emptyCategoryScores.add(CategoryScore.getEmptyCategoryScore(SpecialCategory.UPPER_SECTION_TOTAL, i - 2));
 		for (Category category : LowerSectionCategory.values()) {
-			emptyCategoryScores.add(CategoryScore.getEmptyCategoryScore(category));
+			emptyCategoryScores.add(CategoryScore.getEmptyCategoryScore(category, i - 3));
+			i -= 1;
 		}
-		emptyCategoryScores.add(CategoryScore.getEmptyCategoryScore(SpecialCategory.LOWER_SECTION_TOTAL));
-		emptyCategoryScores.add(CategoryScore.getEmptyCategoryScore(SpecialCategory.UPPER_SECTION_TOTAL));
-		emptyCategoryScores.add(CategoryScore.getEmptyCategoryScore(SpecialCategory.GRAND_TOTAL));
+		emptyCategoryScores.add(CategoryScore.getEmptyCategoryScore(SpecialCategory.LOWER_SECTION_TOTAL, i - 3));
+		emptyCategoryScores.add(CategoryScore.getEmptyCategoryScore(SpecialCategory.UPPER_SECTION_TOTAL, i +6));
+		emptyCategoryScores.add(CategoryScore.getEmptyCategoryScore(SpecialCategory.GRAND_TOTAL, i - 4));
 		return emptyCategoryScores;
 	}
 
