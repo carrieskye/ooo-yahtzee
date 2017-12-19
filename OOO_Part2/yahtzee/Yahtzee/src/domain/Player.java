@@ -87,6 +87,10 @@ public class Player {
 			if (!categoryScore.isPicked()) {
 				categoryScore.setDice(thrownDice());
 			}
+			//TODO
+			if (categoryScore.getCategory().equals(LowerSectionCategory.BONUS_YAHTZEE)){
+				System.out.println("points: " + categoryScore.getPoints());
+			}
 		}
 	}
 
@@ -99,7 +103,7 @@ public class Player {
 		case 2:
 			return new ThrownDice(Dice.TWO, false);
 		case 3:
-			return new ThrownDice(Dice.THREE, false);
+			return new ThrownDice(Dice.SIX, false);
 		case 4:
 			return new ThrownDice(Dice.SIX, false);
 		case 5:

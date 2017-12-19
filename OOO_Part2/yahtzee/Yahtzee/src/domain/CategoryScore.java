@@ -16,7 +16,7 @@ public class CategoryScore {
 
 	public CategoryScore(Category category) {
 		this.category = category;
-		if (category instanceof SpecialCategory) {
+		if (category instanceof SpecialCategory || category.equals(LowerSectionCategory.BONUS_YAHTZEE)) {
 			this.points = 0;
 		} else {
 			this.points = -1;

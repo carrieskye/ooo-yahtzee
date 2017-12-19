@@ -108,5 +108,4 @@ public class ButtonCell extends TableCell<CategoryScore, Integer> {
 		this.picked = picked;
 	}
 
-
 }
