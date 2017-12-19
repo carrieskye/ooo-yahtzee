@@ -16,14 +16,13 @@ public class Player {
 	private ArrayList<ThrownDice> pickedDice;
 	private ArrayList<CategoryScore> categoryScores;
 	private CategoryScore upperSectionScore, upperSectionBonus, upperSectionTotal, lowerSectionTotal, grandTotal;
-	private int yahtzeeBonus, turn;
+	private int turn;
 	private static final int MAX_TURN = 13;
 	private boolean gameOver, surrendered;
 
 	public Player(Game game, String username) throws DomainException {
 		setUsername(username);
 		this.game = game;
-		this.yahtzeeBonus = 0;
 		this.turn = 0;
 		this.gameOver = false;
 		this.surrendered = false;
@@ -87,10 +86,6 @@ public class Player {
 			if (!categoryScore.isPicked()) {
 				categoryScore.setDice(thrownDice());
 			}
-			//TODO
-			if (categoryScore.getCategory().equals(LowerSectionCategory.BONUS_YAHTZEE)){
-				System.out.println("points: " + categoryScore.getPoints());
-			}
 		}
 	}
 
@@ -103,11 +98,11 @@ public class Player {
 		case 2:
 			return new ThrownDice(Dice.TWO, false);
 		case 3:
-			return new ThrownDice(Dice.SIX, false);
+			return new ThrownDice(Dice.THREE, false);
 		case 4:
-			return new ThrownDice(Dice.SIX, false);
+			return new ThrownDice(Dice.FOUR, false);
 		case 5:
-			return new ThrownDice(Dice.SIX, false);
+			return new ThrownDice(Dice.FIVE, false);
 		case 6:
 			return new ThrownDice(Dice.SIX, false);
 		default:
@@ -133,23 +128,13 @@ public class Player {
 
 	public void endTurn(Category category) {
 		CategoryScore currentCategory = getCategoryScore(category);
-		if (category.equals(LowerSectionCategory.BONUS_YAHTZEE)) {
-			if (yahtzeeBonus >= 1) {
-				for (CategoryScore categoryScore : categoryScores) {
-					if (categoryScore.getCategory().equals(LowerSectionCategory.BONUS_YAHTZEE)) {
-						categoryScore.setYahtzeeBonus(yahtzeeBonus, currentCategory.getDice());
-					}
-				}
-			} else {
-				getCategoryScore(category).setPicked(true);
-			}
-			yahtzeeBonus += 1;
-		} else {
-			if (!category.equals(LowerSectionCategory.BONUS_YAHTZEE)) {
-				turn += 1;
-			}
-			getCategoryScore(category).setPicked(true);
+		if (!category.equals(LowerSectionCategory.BONUS_YAHTZEE)) {
+			turn += 1;
 		}
+		if (category.equals(LowerSectionCategory.YAHTZEE)) {
+			getCategoryScore(LowerSectionCategory.BONUS_YAHTZEE).updateBonusYahtzee();
+		}
+		getCategoryScore(category).setPicked(true);
 		clearCategories();
 		updateTotals(currentCategory);
 		thrownDice.clear();
@@ -174,7 +159,7 @@ public class Player {
 
 	public void clearCategories() {
 		for (CategoryScore categoryScore : categoryScores) {
-			if (!categoryScore.isPicked()) {
+			if (!(categoryScore.isPicked() || categoryScore.getCategory().equals(LowerSectionCategory.BONUS_YAHTZEE))) {
 				categoryScore.reset();
 			}
 		}

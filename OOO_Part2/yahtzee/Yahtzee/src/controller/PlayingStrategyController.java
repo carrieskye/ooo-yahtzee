@@ -43,8 +43,8 @@ public class PlayingStrategyController extends PlayerController {
 	public void setCenter(VBox vbox) {
 		screen.setCenter(vbox);
 	}
-	
-	public Boolean getYahtzee(){
+
+	public Boolean getYahtzee() {
 		return this.yahtzee;
 	}
 
@@ -95,6 +95,8 @@ public class PlayingStrategyController extends PlayerController {
 			buttonCell.setPicked(true);
 			if (buttonCell.getCategory().equals(LowerSectionCategory.YAHTZEE)) {
 				yahtzee = true;
+			} else if (buttonCell.getCategory().equals(LowerSectionCategory.BONUS_YAHTZEE)) {
+				buttonCell.bonusYahtzee();
 			}
 			strategy.setAction(4);
 			player.endTurn(buttonCell.getCategory());

@@ -11,7 +11,7 @@ import domain.Category.UpperSectionCategory;
 public class CategoryScore {
 	private ArrayList<Dice> pickedDice;
 	private Category category;
-	private int points;
+	private int points, bonusYahtzee;
 	private boolean playing, picked;
 
 	public CategoryScore(Category category) {
@@ -21,6 +21,7 @@ public class CategoryScore {
 		} else {
 			this.points = -1;
 		}
+		this.bonusYahtzee = -1;
 		this.playing = false;
 		this.picked = false;
 	}
@@ -46,6 +47,8 @@ public class CategoryScore {
 			} else if (this.category instanceof LowerSectionCategory) {
 				return lowerSectionPoints();
 			}
+		} else if (category.equals(LowerSectionCategory.BONUS_YAHTZEE)) {
+			return this.points;
 		}
 		return 0;
 	}
@@ -85,7 +88,7 @@ public class CategoryScore {
 		case YAHTZEE:
 			return 50;
 		case BONUS_YAHTZEE:
-			return this.points + 100;
+			return (bonusYahtzee + 1) * 100;
 		}
 		return 0;
 	}
@@ -217,11 +220,6 @@ public class CategoryScore {
 
 	}
 
-	public void setYahtzeeBonus(int index, ArrayList<Dice> dice) {
-		setDice(dice);
-		setPoints((index + 1) * 100);
-	}
-
 	public void reset() {
 		setPoints(-1);
 	}
@@ -231,7 +229,15 @@ public class CategoryScore {
 	}
 
 	public void setPicked(boolean picked) {
-		this.picked = picked;
+		if (this.getCategory().equals(LowerSectionCategory.BONUS_YAHTZEE)) {
+			updateBonusYahtzee();
+		} else {
+			this.picked = picked;
+		}
+	}
+
+	public void updateBonusYahtzee() {
+		this.bonusYahtzee += 1;
 	}
 
 	public boolean isPlaying() {

@@ -14,6 +14,7 @@ public class ButtonCell extends TableCell<CategoryScore, Integer> {
 	private Button pointsButton;
 	private PlayingStrategyController controller;
 	private boolean picked;
+	private int bonusYahtzee;
 
 	public ButtonCell(PlayingStrategyController controller) {
 		this.controller = controller;
@@ -22,6 +23,7 @@ public class ButtonCell extends TableCell<CategoryScore, Integer> {
 		this.controller.addCategoryHandler(pointsButton, this);
 		textOnlyField("0");
 		this.picked = false;
+		this.bonusYahtzee = 0;
 	}
 
 	@Override
@@ -29,31 +31,49 @@ public class ButtonCell extends TableCell<CategoryScore, Integer> {
 		super.updateItem(value, empty);
 		if (!empty) {
 			if (Integer.valueOf(value) < -1) {
-				this.category = initializeCategory(value);
-				if (category instanceof SpecialCategory) {
-					textOnlyField("0");
-				} else {
-					textOnlyField("");
-				}
+				handleNegativeValue(value);
 			} else if (Integer.valueOf(value) == -1) {
 				textOnlyField("");
 			} else {
-				if (category.equals(LowerSectionCategory.BONUS_YAHTZEE) && !controller.getYahtzee()) {
-					textOnlyField("");
-				} else if (category instanceof SpecialCategory || picked) {
-					textOnlyField(value.toString());
-				} else {
-					setGraphic(pointsButton);
-					pointsButton.setText(value.toString());
-					setText(null);
-				}
+				handlePositiveValue(value);
 			}
+		}
+	}
+
+	public void handlePositiveValue(Integer value) {
+		if (category.equals(LowerSectionCategory.BONUS_YAHTZEE)) {
+			if (!controller.getYahtzee() || value == 0) {
+				textOnlyField("");
+			} else if (value == bonusYahtzee * 100) {
+				textOnlyField(value.toString());
+			} else if (value != bonusYahtzee * 100 && value != 0) {
+				buttonOnlyField(value.toString());
+			}
+		} else if (category instanceof SpecialCategory || picked) {
+			textOnlyField(value.toString());
+		} else {
+			buttonOnlyField(value.toString());
+		}
+	}
+
+	public void handleNegativeValue(Integer value) {
+		this.category = initializeCategory(value);
+		if (category instanceof SpecialCategory) {
+			textOnlyField("0");
+		} else {
+			textOnlyField("");
 		}
 	}
 
 	public void textOnlyField(String text) {
 		setText(text);
 		setGraphic(null);
+	}
+
+	public void buttonOnlyField(String text) {
+		setGraphic(pointsButton);
+		pointsButton.setText(text);
+		setText(null);
 	}
 
 	public Category initializeCategory(Integer value) {
@@ -106,6 +126,10 @@ public class ButtonCell extends TableCell<CategoryScore, Integer> {
 
 	public void setPicked(boolean picked) {
 		this.picked = picked;
+	}
+
+	public void bonusYahtzee() {
+		this.bonusYahtzee += 1;
 	}
 
 }
