@@ -25,7 +25,7 @@ public class GameController {
 		this.stage = stage;
 		screen = new StartScreen(this);
 		scene = new Scene(screen, 380, 225 + 20 * game.getPlayers().size());
-		scene.getStylesheets().add(getClass().getResource("../application/application.css").toExternalForm());
+		scene.getStylesheets().add(getClass().getResource("/application/application.css").toExternalForm());
 		stage.setTitle("GameSuite");
 		stage.setScene(scene);
 		stage.show();
@@ -94,7 +94,7 @@ public class GameController {
 		GameScreen playerScreen = new GameScreen(player.getUsername(), game.getCurrentPlayer().getUsername());
 		PlayerController controller = new PlayerController(game, player, playerScreen);
 		playerScreen.initialize(controller);
-		startPlayerScreen(player, playerScreen, "../application/application.css");
+		startPlayerScreen(player, playerScreen, "/application/application.css");
 	}
 
 	class AddPlayerHandler implements EventHandler<ActionEvent> {

@@ -12,7 +12,7 @@ public enum Dice {
 	private Dice(int number) {
 		this.number = number;
 		try {
-			InputStream resourceBuff = this.getClass().getResourceAsStream("/dice/dice-" + number + ".png");
+			InputStream resourceBuff = this.getClass().getResourceAsStream("/resources/Dice-" + number + ".png");
 			this.img = new Image(resourceBuff);
 		} catch (Exception e) {
 			e.printStackTrace();

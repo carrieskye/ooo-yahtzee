@@ -3,7 +3,6 @@ package domain;
 import java.util.ArrayList;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
 import domain.Category.LowerSectionCategory;
 import domain.Category.SpecialCategory;
 import domain.Category.UpperSectionCategory;
@@ -124,9 +123,9 @@ public class CategoryScore {
 			case FULL_HOUSE:
 				return fullHouse();
 			case SMALL_STRAIGHT:
-				return straight() >= 4 ? true : false;
+				return straight(pickedDice) >= 4 ? true : false;
 			case LARGE_STRAIGHT:
-				return straight() == 5 ? true : false;
+				return straight(pickedDice) == 5 ? true : false;
 			case YAHTZEE:
 				return correctFrequencyOfDice(5) ? true : false;
 			case CHANCE:
@@ -163,19 +162,18 @@ public class CategoryScore {
 		return (three != 0 && two != 0);
 	}
 
-	public int straight() {
+	public static int straight(ArrayList<Dice> setOfDice) {
 		SortedSet<Integer> values = new TreeSet<>();
-		for (Dice dice : pickedDice) {
+		for (Dice dice : setOfDice) {
 			values.add(dice.getNumber());
 		}
-		ArrayList<Integer> valuesSorted = new ArrayList<>(values);
 		int straightLevel = 1;
-		boolean straight = true;
-		while (straight == true && straightLevel < valuesSorted.size()) {
-			if (valuesSorted.get(straightLevel - 1).equals(valuesSorted.get(straightLevel) - 1)) {
+		ArrayList<Integer> valuesSorted = new ArrayList<Integer>(values);
+		for (int i = 0; i < valuesSorted.size() - 1; i++) {
+			if (valuesSorted.get(i) == valuesSorted.get(i + 1) - 1) {
 				straightLevel += 1;
 			} else {
-				straight = false;
+				straightLevel = 1;
 			}
 		}
 		return straightLevel;

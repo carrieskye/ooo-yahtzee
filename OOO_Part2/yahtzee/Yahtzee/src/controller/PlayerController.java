@@ -52,7 +52,7 @@ public class PlayerController implements Observer {
 	public boolean newGame(Player player) {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		DialogPane dialogPane = alert.getDialogPane();
-		dialogPane.getStylesheets().add(getClass().getResource("../application/application.css").toExternalForm());
+		dialogPane.getStylesheets().add(getClass().getResource("/application/application.css").toExternalForm());
 		dialogPane.getStyleClass().add("alert");
 		alert.setTitle("Yahtzee");
 		String header = "";
